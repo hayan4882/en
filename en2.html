@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoLog · 지구 기여 일지</title>
+<style>
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root {
+  --yellow: #FFE000;
+  --yellow-dark: #F5C800;
+  --yellow-pale: #FFFACC;
+  --dark: #1A1A1A;
+  --dark2: #2B2B2B;
+  --navy: #1C2B4A;
+  --white: #FFFFFF;
+  --gray-bg: #F7F7F7;
+  --gray-line: #E8E8E8;
+  --gray-text: #888;
+  --green-acc: #00C471;
+  --blue-acc: #3B82F6;
+  --text: #1A1A1A;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  background: var(--white);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════ */
+.top-nav {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--dark);
+  height: 64px;
+  display: flex; align-items: center;
+  padding: 0 48px;
+  gap: 0;
+}
+.nav-logo {
+  font-size: 20px; font-weight: 900; color: var(--yellow);
+  letter-spacing: -1px; margin-right: 48px; white-space: nowrap;
+  cursor: pointer;
+}
+.nav-logo span { color: var(--white); }
+.nav-links { display: flex; gap: 4px; flex: 1; }
+.nav-link {
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.65);
+  cursor: pointer; transition: all 0.15s; border: none; background: none;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+.nav-link.active { color: var(--yellow); background: rgba(255,224,0,0.12); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-score {
+  font-size: 13px; font-weight: 700; color: var(--yellow);
+  background: rgba(255,224,0,0.12);
+  padding: 5px 14px; border-radius: 20px; white-space: nowrap;
+}
+.nav-date { font-size: 12px; color: rgba(255,255,255,0.45); }
+
+/* ══════════════════════════════════════
+   PAGE SYSTEM
+══════════════════════════════════════ */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══════════════════════════════════════
+   HERO BANNER
+══════════════════════════════════════ */
+.hero {
+  background: var(--dark);
+  min-height: 480px;
+  display: flex; align-items: center;
+  padding: 80px 80px 80px 120px;
+  position: relative; overflow: hidden;
+}
+.hero-bg-circle {
+  position: absolute; right: -80px; top: -80px;
+  width: 520px; height: 520px; border-radius: 50%;
+  background: var(--yellow); opacity: 0.06;
+  pointer-events: none;
+}
+.hero-bg-circle2 {
+  position: absolute; right: 160px; bottom: -120px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: var(--yellow); opacity: 0.04;
+  pointer-events: none;
+}
+.hero-left { flex: 1; z-index: 1; }
+.hero-tag {
+  display: inline-block;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  color: var(--yellow); background: rgba(255,224,0,0.12);
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 22px;
+}
+.hero-title {
+  font-size: 52px; font-weight: 900; line-height: 1.15;
+  color: var(--white); letter-spacing: -1.5px;
+  margin-bottom: 18px;
+}
+.hero-title .hl { color: var(--yellow); }
+.hero-desc {
+  font-size: 16px; color: rgba(255,255,255,0.6);
+  max-width: 420px; line-height: 1.7; margin-bottom: 36px;
+}
+.hero-btns { display: flex; gap: 12px; }
+.btn-primary {
+  padding: 14px 32px; border-radius: 10px;
+  background: var(--yellow); color: var(--dark);
+  font-size: 15px; font-weight: 800; border: none; cursor: pointer;
+  transition: all 0.15s; letter-spacing: -0.3px;
+}
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+.btn-ghost {
+  padding: 14px 32px; border-radius: 10px;
+  background: transparent; color: var(--white);
+  font-size: 15px; font-weight: 700;
+  border: 1.5px solid rgba(255,255,255,0.25); cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.5); }
+.hero-right {
+  width: 420px; z-index: 1;
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+/* Today stats card in hero */
+.hero-card {
+  background: var(--yellow); border-radius: 20px;
+  padding: 24px 28px; width: 340px;
+  position: relative; overflow: hidden;
+}
+.hero-card::after {
+  content: '🌍'; position: absolute; right: 14px; bottom: -8px;
+  font-size: 64px; opacity: 0.18;
+}
+.hc-label { font-size: 12px; font-weight: 700; color: rgba(26,26,26,0.55); margin-bottom: 6px; }
+.hc-main { font-size: 36px; font-weight: 900; color: var(--dark); line-height: 1; }
+.hc-sub { font-size: 13px; color: var(--dark2); margin-top: 8px; font-weight: 600; }
+.hero-mini-cards { display: flex; gap: 10px; width: 340px; }
+.hmc {
+  flex: 1; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 14px 16px; text-align: center;
+}
+.hmc-val { font-size: 22px; font-weight: 900; color: var(--yellow); }
+.hmc-label { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+/* ══════════════════════════════════════
+   SECTION WRAPPER
+══════════════════════════════════════ */
+.section { padding: 72px 80px; }
+.section-sm { padding: 48px 80px; }
+.section-dark { background: var(--dark); }
+.section-gray { background: var(--gray-bg); }
+.section-yellow { background: var(--yellow); }
+
+.section-eyebrow {
+  font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.eyebrow-yellow { color: var(--yellow); }
+.eyebrow-green { color: var(--green-acc); }
+.eyebrow-dark { color: var(--dark); opacity: 0.45; }
+.section-heading {
+  font-size: 36px; font-weight: 900; letter-spacing: -1px; line-height: 1.2;
+  margin-bottom: 8px;
+}
+.section-heading-white { color: var(--white); }
+.section-sub {
+  font-size: 15px; color: var(--gray-text); margin-bottom: 40px;
+  max-width: 520px; line-height: 1.6;
+}
+.section-sub-white { color: rgba(255,255,255,0.55); }
+
+/* ══════════════════════════════════════
+   CATEGORY TABS (desktop style)
+══════════════════════════════════════ */
+.cat-tabs {
+  display: flex; gap: 8px; margin-bottom: 28px;
+  border-bottom: 2px solid var(--gray-line);
+  padding-bottom: 0;
+}
+.cat-tab {
+  padding: 10px 22px 14px;
+  font-size: 14px; font-weight: 700;
+  color: var(--gray-text); cursor: pointer;
+  border: none; background: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s; white-space: nowrap;
+}
+.cat-tab:hover { color: var(--dark); }
+.cat-tab.active { color: var(--dark); border-bottom-color: var(--yellow); }
+
+/* ══════════════════════════════════════
+   CHECKLIST GRID
+══════════════════════════════════════ */
+.checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.check-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--white); border: 1.5px solid var(--gray-line);
+  border-radius: 14px; padding: 16px 18px;
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.check-item:hover { border-color: var(--yellow-dark); box-shadow: 0 2px 12px rgba(255,224,0,0.15); }
+.check-item.checked {
+  background: var(--yellow-pale); border-color: var(--yellow);
+}
+.check-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  border: 2px solid var(--gray-line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+  transition: all 0.15s; background: var(--white); font-weight: 900;
+}
+.check-item.checked .check-icon {
+  background: var(--yellow); border-color: var(--yellow); color: var(--dark);
+}
+.check-info { flex: 1; min-width: 0; }
+.check-name { font-size: 14px; font-weight: 700; }
+.check-sub { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+.check-pts {
+  font-size: 12px; font-weight: 800; color: var(--dark);
+  background: var(--gray-line);
+  border-radius: 6px; padding: 3px 9px; flex-shrink: 0;
+}
+.check-item.checked .check-pts { background: var(--yellow); }
+
+/* ══════════════════════════════════════
+   RESULT SECTION (2-col)
+══════════════════════════════════════ */
+.result-layout {
+  display: grid; grid-template-columns: 1fr 420px; gap: 32px;
+  align-items: start;
+}
+.big-result-card {
+  background: var(--dark); border-radius: 24px;
+  padding: 40px 44px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 36px;
+}
+.brc-content { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.brc-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+.brc-main { font-size: 52px; font-weight: 900; color: var(--white); line-height: 1; }
+.brc-main span { color: var(--yellow); }
+.brc-co2 { font-size: 17px; color: rgba(255,255,255,0.7); margin-top: 14px; font-weight: 600; }
+.brc-co2 b { color: var(--green-acc); }
+.brc-items { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 10px; line-height: 1.8; }
+.brc-btns { display: flex; gap: 12px; margin-top: 24px; }
+.brc-btn {
+  padding: 12px 22px; border-radius: 10px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  border: none; transition: all 0.15s;
+}
+.brc-btn-y { background: var(--yellow); color: var(--dark); }
+.brc-btn-y:hover { background: var(--yellow-dark); }
+/* Earth canvas */
+.earth-wrap {
+  flex-shrink: 0; position: relative; z-index: 1;
+  width: 220px; height: 220px;
+}
+#earthCanvas { display: block; }
+.brc-btn-o { background: rgba(255,255,255,0.1); color: var(--white); border: 1.5px solid rgba(255,255,255,0.2); }
+.brc-btn-o:hover { background: rgba(255,255,255,0.18); }
+
+/* stat cards on the right */
+.stat-cards { display: flex; flex-direction: column; gap: 14px; }
+.stat-card {
+  background: var(--gray-bg); border-radius: 18px;
+  padding: 22px 24px; border: 1.5px solid var(--gray-line);
+}
+.sc-val { font-size: 32px; font-weight: 900; color: var(--dark); }
+.sc-val span { font-size: 16px; font-weight: 700; color: var(--gray-text); margin-left: 4px; }
+.sc-label { font-size: 12px; color: var(--gray-text); margin-top: 4px; }
+.sc-bar { height: 6px; background: var(--gray-line); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.sc-bar-fill { height: 100%; background: var(--yellow); border-radius: 3px; transition: width 0.6s ease; }
+
+/* ══════════════════════════════════════
+   HISTORY (desktop bar chart)
+══════════════════════════════════════ */
+.history-tabs-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.htabs { display: flex; gap: 6px; }
+.htab {
+  padding: 8px 20px; border-radius: 8px;
+  border: 1.5px solid var(--gray-line); background: var(--white);
+  font-size: 13px; font-weight: 700; cursor: pointer; color: var(--gray-text);
+  transition: all 0.15s;
+}
+.htab.active { background: var(--dark); border-color: var(--dark); color: var(--yellow); }
+.history-chart-wrap {
+  background: var(--white); border: 1.5px solid var(--gray-line);
+  border-radius: 20px; padding: 32px 36px;
+}
+.bar-chart-desktop { display: flex; gap: 12px; align-items: flex-end; height: 180px; }
+.bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.bar-fill-d {
+  width: 100%; border-radius: 8px 8px 0 0;
+  background: var(--yellow); transition: height 0.5s ease;
+  min-height: 3px; position: relative;
+}
+.bar-fill-d.today { background: var(--dark); }
+.bar-fill-d .bar-tip {
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 800; color: var(--dark); white-space: nowrap;
+}
+.bar-fill-d.today .bar-tip { color: var(--yellow); }
+.bar-lbl { font-size: 11px; color: var(--gray-text); font-weight: 600; }
+/* Bar col clickable */
+.bar-col { cursor: pointer; border-radius: 10px; padding: 4px; transition: background 0.15s; }
+.bar-col:hover { background: rgba(0,0,0,0.04); }
+.bar-col.bar-selected { background: rgba(255,224,0,0.12); }
+.bar-fill-d.bar-active { background: var(--dark) !important; }
+/* Empty day bar */
+.bar-fill-empty {
+  width: 100%; border-radius: 8px 8px 0 0;
+  min-height: 10px; height: 10px;
+  background: repeating-linear-gradient(45deg, var(--gray-line), var(--gray-line) 2px, transparent 2px, transparent 6px);
+  border: 1.5px dashed #D0D0D0; box-sizing: border-box;
+}
+.bar-fill-empty.today-empty {
+  border-color: var(--yellow);
+  background: repeating-linear-gradient(45deg, rgba(255,224,0,0.2), rgba(255,224,0,0.2) 2px, transparent 2px, transparent 6px);
+}
+.bar-lbl-miss { font-size: 9px; color: #ccc; margin-top: 2px; }
+/* Day Detail Panel */
+.day-detail-panel { margin-top: 20px; border-radius: 16px; overflow: hidden; border: 1.5px solid var(--gray-line); }
+.day-detail-has { border-color: var(--yellow); }
+.day-detail-header { display: flex; align-items: center; gap: 16px; padding: 18px 24px; background: var(--dark); flex-wrap: wrap; }
+.dd-date-label { font-size: 14px; font-weight: 800; color: var(--white); flex-shrink: 0; }
+.dd-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.dd-badge { font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+.dd-badge-pct { background: var(--yellow); color: var(--dark); }
+.dd-badge-co2 { background: rgba(0,196,113,0.2); color: var(--green-acc); }
+.dd-badge-pts { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); }
+.day-detail-body { padding: 16px 24px; background: var(--white); }
+.dd-items-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.dd-item-chip { font-size: 12px; font-weight: 700; background: var(--yellow-pale); color: var(--dark); border: 1px solid var(--yellow); border-radius: 20px; padding: 5px 13px; }
+.day-detail-empty-body { padding: 24px; background: var(--gray-bg); text-align: center; color: var(--gray-text); font-size: 14px; line-height: 2; }
+/* ── Month week cards ── */
+.month-grid { display: grid; gap: 14px; }
+.month-week-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: var(--white); border: 1.5px solid var(--gray-line);
+  border-radius: 18px; padding: 20px 14px; transition: border-color 0.2s;
+}
+.month-week-card.has-data { border-color: var(--yellow-dark); }
+.mwc-label { font-size: 11px; font-weight: 800; color: var(--gray-text); letter-spacing: 0.5px; }
+.mwc-bar-wrap { width: 100%; height: 72px; display: flex; align-items: flex-end; }
+.mwc-bar { width: 100%; background: var(--yellow); border-radius: 6px 6px 0 0; min-height: 4px; transition: height 0.6s ease; }
+.mwc-pct { font-size: 26px; font-weight: 900; color: var(--dark); line-height: 1; }
+.mwc-pct-zero { font-size: 22px; color: var(--gray-text); }
+.mwc-co2 { font-size: 12px; color: var(--green-acc); font-weight: 700; }
+.mwc-cnt { font-size: 11px; color: var(--gray-text); }
+/* ── Calendar selected ── */
+.cal-cell-d { cursor: pointer; }
+.cal-cell-d.cal-selected { box-shadow: 0 0 0 2.5px var(--dark) !important; font-weight: 900 !important; color: var(--dark) !important; }
+/* ── Community: search / category / write ── */
+.comm-topbar { margin-bottom: 16px; }
+.comm-search-wrap { position: relative; margin-bottom: 10px; }
+.comm-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
+.comm-search-bar {
+  width: 100%; padding: 10px 16px 10px 38px;
+  border: 1.5px solid var(--gray-line); border-radius: 10px;
+  font-size: 14px; font-family: inherit; outline: none; background: var(--gray-bg);
+}
+.comm-search-bar:focus { border-color: var(--yellow); background: var(--white); }
+.comm-cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.comm-cat-tab {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1.5px solid var(--gray-line); background: var(--white);
+  font-size: 12px; font-weight: 700; cursor: pointer; color: var(--gray-text);
+  transition: all 0.15s; white-space: nowrap;
+}
+.comm-cat-tab:hover { border-color: var(--dark); color: var(--dark); }
+.comm-cat-tab.active { background: var(--dark); border-color: var(--dark); color: var(--yellow); }
+.write-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border-radius: 10px;
+  background: var(--yellow); border: none; color: var(--dark);
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: background 0.15s;
+}
+.write-btn:hover { background: var(--yellow-dark); }
+.post-cat-badge {
+  font-size: 11px; font-weight: 700;
+  background: rgba(59,130,246,0.10); color: var(--blue-acc);
+  padding: 3px 10px; border-radius: 20px;
+}
+/* ── Write modal ── */
+.write-modal-box { background: var(--white); border-radius: 24px; width: 100%; max-width: 500px; overflow: hidden; }
+.wm-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px 0; }
+.wm-header h3 { font-size: 18px; font-weight: 900; }
+.wm-body { padding: 18px 24px 24px; }
+.wm-section-label { font-size: 11px; font-weight: 800; color: var(--gray-text); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+.wm-cat-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.wm-cat-chip { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--gray-line); background: var(--white); font-size: 12px; font-weight: 700; cursor: pointer; color: var(--gray-text); transition: all 0.15s; }
+.wm-cat-chip.selected { background: var(--dark); border-color: var(--dark); color: var(--yellow); }
+.wm-textarea { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--gray-line); background: var(--gray-bg); font-size: 14px; font-family: inherit; resize: none; outline: none; margin-bottom: 14px; }
+.wm-textarea:focus { border-color: var(--yellow); background: var(--white); }
+.wm-eco-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--gray-bg); border: 1.5px solid var(--gray-line); cursor: pointer; margin-bottom: 16px; user-select: none; transition: border-color 0.15s; }
+.wm-eco-row.on { border-color: var(--yellow); background: var(--yellow-pale); }
+.wm-toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--gray-line); position: relative; transition: background 0.2s; flex-shrink: 0; }
+.wm-eco-row.on .wm-toggle { background: var(--yellow-dark); }
+.wm-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--white); transition: transform 0.2s; }
+.wm-eco-row.on .wm-toggle::after { transform: translateX(16px); }
+.wm-eco-text { flex: 1; }
+.wm-eco-text strong { font-size: 13px; font-weight: 800; display: block; }
+.wm-eco-text small { font-size: 11px; color: var(--gray-text); }
+/* calendar */
+.cal-grid-d { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
+.cal-cell-d {
+  aspect-ratio: 1; border-radius: 8px; background: var(--gray-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--gray-text); cursor: default;
+  transition: transform 0.1s; font-weight: 600;
+}
+.cal-cell-d:hover { transform: scale(1.1); z-index: 2; }
+.cal-cell-d.today { box-shadow: 0 0 0 2px var(--yellow); }
+.cal-cell-d.empty { background: transparent; }
+.cal-days-h { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-bottom: 8px; }
+.cal-days-h span { text-align: center; font-size: 11px; color: var(--gray-text); font-weight: 700; }
+
+/* ══════════════════════════════════════
+   COMMUNITY
+══════════════════════════════════════ */
+.community-layout {
+  display: grid; grid-template-columns: 1fr 300px; gap: 32px;
+  align-items: start;
+}
+.feed-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.sort-pills { display: flex; gap: 8px; }
+.sort-pill {
+  padding: 7px 18px; border-radius: 20px;
+  border: 1.5px solid var(--gray-line); background: var(--white);
+  font-size: 13px; font-weight: 700; cursor: pointer; color: var(--gray-text);
+  transition: all 0.15s;
+}
+.sort-pill.active { background: var(--dark); border-color: var(--dark); color: var(--yellow); }
+
+.feed { display: flex; flex-direction: column; gap: 16px; }
+.post-card {
+  background: var(--white); border: 1.5px solid var(--gray-line);
+  border-radius: 20px; overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+.post-card:hover { box-shadow: var(--shadow); }
+.post-inner { padding: 22px 24px 0; }
+.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.post-avatar {
+  width: 42px; height: 42px; border-radius: 14px;
+  background: var(--yellow-pale); display: flex; align-items: center;
+  justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.post-meta { flex: 1; }
+.post-nick { font-size: 15px; font-weight: 800; }
+.post-date { font-size: 12px; color: var(--gray-text); margin-top: 1px; }
+.post-badge {
+  font-size: 11px; font-weight: 800;
+  background: var(--yellow); color: var(--dark);
+  padding: 4px 11px; border-radius: 20px;
+}
+/* eco card inside post */
+.post-eco {
+  background: var(--dark); border-radius: 14px; padding: 18px 20px;
+  position: relative; overflow: hidden; margin-bottom: 14px;
+}
+.post-eco::after {
+  content: '🌍'; position: absolute; right: 12px; bottom: -4px;
+  font-size: 48px; opacity: 0.12;
+}
+.pe-pct { font-size: 26px; font-weight: 900; color: var(--white); }
+.pe-pct span { color: var(--yellow); }
+.pe-co2 { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.pe-items { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 8px; line-height: 1.6; }
+.post-message { font-size: 14px; color: var(--text); line-height: 1.6; padding-bottom: 4px; }
+.post-actions {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-top: 1px solid var(--gray-line);
+  margin-top: 14px;
+}
+.like-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 20px;
+  border: 1.5px solid var(--gray-line); background: var(--white);
+  font-size: 13px; font-weight: 700; cursor: pointer; color: var(--gray-text);
+  transition: all 0.15s; user-select: none;
+}
+.like-btn.liked { background: #FFF0F0; border-color: #F7BFBF; color: #E53E3E; }
+.cmt-count { font-size: 13px; color: var(--gray-text); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.comments-area { padding: 0 24px 16px; }
+.comment-item { display: flex; gap: 10px; margin-top: 10px; align-items: flex-start; }
+.c-av { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.c-body { flex: 1; background: var(--gray-bg); border-radius: 10px; padding: 8px 12px; }
+.c-nick { font-size: 12px; font-weight: 800; color: var(--dark); }
+.c-text { font-size: 13px; color: var(--text); margin-top: 2px; }
+.comment-input-row {
+  display: flex; gap: 8px; padding: 12px 24px 20px;
+  border-top: 1px solid var(--gray-line); margin-top: 4px;
+}
+.ci {
+  flex: 1; padding: 9px 15px; border-radius: 20px;
+  border: 1.5px solid var(--gray-line); background: var(--gray-bg);
+  font-size: 13px; outline: none; font-family: inherit;
+}
+.ci:focus { border-color: var(--yellow); background: var(--white); }
+.cs {
+  padding: 9px 20px; border-radius: 20px;
+  background: var(--yellow); border: none; color: var(--dark);
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  transition: background 0.15s;
+}
+.cs:hover { background: var(--yellow-dark); }
+
+/* Sidebar */
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+.profile-card {
+  background: var(--dark); border-radius: 20px; padding: 24px;
+  color: var(--white);
+}
+.pc-avatar { font-size: 44px; margin-bottom: 12px; }
+.pc-label { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 4px; }
+.pc-name { font-size: 18px; font-weight: 900; }
+.pc-edit {
+  margin-top: 16px; width: 100%; padding: 10px;
+  border-radius: 10px; background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15); color: var(--white);
+  font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.pc-edit:hover { background: rgba(255,255,255,0.18); }
+.sidebar-card {
+  background: var(--gray-bg); border: 1.5px solid var(--gray-line);
+  border-radius: 20px; padding: 20px 22px;
+}
+.sidebar-card h4 { font-size: 13px; font-weight: 800; margin-bottom: 14px; color: var(--dark); }
+.top-post {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--gray-line);
+}
+.top-post:last-child { border: none; padding-bottom: 0; }
+.tp-rank { font-size: 18px; font-weight: 900; color: var(--yellow); width: 28px; flex-shrink: 0; }
+.tp-info { flex: 1; min-width: 0; }
+.tp-nick { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tp-pts { font-size: 11px; color: var(--gray-text); }
+.tp-likes { font-size: 12px; color: #E53E3E; font-weight: 700; }
+
+/* feed empty */
+.feed-empty { text-align: center; padding: 64px 20px; color: var(--gray-text); }
+.fe-icon { font-size: 56px; margin-bottom: 14px; }
+
+/* ══════════════════════════════════════
+   BOTTOM CTA BAND
+══════════════════════════════════════ */
+.cta-band {
+  background: var(--yellow);
+  padding: 56px 80px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cta-band h2 { font-size: 32px; font-weight: 900; color: var(--dark); letter-spacing: -1px; }
+.cta-band p { font-size: 15px; color: rgba(26,26,26,0.6); margin-top: 6px; }
+.btn-dark {
+  padding: 16px 36px; border-radius: 12px;
+  background: var(--dark); color: var(--yellow);
+  font-size: 15px; font-weight: 800; border: none; cursor: pointer;
+  transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-dark:hover { opacity: 0.85; }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  background: var(--dark); padding: 28px 80px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-logo { font-size: 16px; font-weight: 900; color: var(--yellow); }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  background: var(--dark); color: var(--yellow);
+  padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 700;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  z-index: 9999; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; }
+
+/* ══════════════════════════════════════
+   MODALS
+══════════════════════════════════════ */
+.modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); z-index: 500;
+  align-items: center; justify-content: center;
+}
+.modal-bg.open { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: 24px;
+  width: 100%; max-width: 480px; overflow: hidden;
+}
+.share-preview {
+  background: var(--dark); padding: 36px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.share-preview::before {
+  content: ''; position: absolute;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: var(--yellow); opacity: 0.08;
+  right: -80px; top: -80px;
+}
+.sp-logo { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+.sp-pct { font-size: 44px; font-weight: 900; color: var(--white); }
+.sp-pct span { color: var(--yellow); }
+.sp-co2 { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 8px; }
+.sp-items { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 10px; line-height: 1.7; }
+.sp-date { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 12px; }
+.modal-body { padding: 24px; }
+.modal-body textarea {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid var(--gray-line); background: var(--gray-bg);
+  font-size: 14px; font-family: inherit; resize: none; outline: none;
+  margin-bottom: 14px;
+}
+.modal-body textarea:focus { border-color: var(--yellow); }
+.modal-btns { display: flex; gap: 10px; }
+.mbt {
+  flex: 1; padding: 13px; border-radius: 12px; font-size: 14px;
+  font-weight: 800; cursor: pointer; border: none; transition: all 0.15s;
+}
+.mbt-ghost { background: var(--gray-bg); color: var(--dark); border: 1.5px solid var(--gray-line); }
+.mbt-ghost:hover { background: var(--gray-line); }
+.mbt-primary { background: var(--yellow); color: var(--dark); }
+.mbt-primary:hover { background: var(--yellow-dark); }
+.modal-close-row { padding: 16px 20px 0; display: flex; justify-content: flex-end; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray-text); }
+
+/* Nick modal */
+.nick-modal {
+  background: var(--white); border-radius: 24px;
+  width: 100%; max-width: 400px; padding: 32px 28px;
+}
+.nick-modal h3 { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+.nick-modal p { font-size: 14px; color: var(--gray-text); margin-bottom: 22px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-bottom: 18px; }
+.av-pick {
+  font-size: 26px; padding: 8px; cursor: pointer;
+  border-radius: 10px; border: 2px solid transparent;
+  text-align: center; transition: all 0.15s;
+}
+.av-pick:hover { background: var(--yellow-pale); }
+.av-pick.selected { border-color: var(--yellow); background: var(--yellow-pale); }
+.nick-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid var(--gray-line); font-size: 15px;
+  font-family: inherit; outline: none; margin-bottom: 14px;
+}
+.nick-input:focus { border-color: var(--yellow); }
+.nick-save { width: 100%; padding: 14px; border-radius: 12px; background: var(--yellow); border: none; color: var(--dark); font-size: 15px; font-weight: 800; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<nav class="top-nav">
+  <div class="nav-logo" onclick="switchPage('home')">Eco<span>Log</span> 🌿</div>
+  <div class="nav-links">
+    <button class="nav-link active" id="nl-home" onclick="switchPage('home')">오늘의 실천</button>
+    <button class="nav-link" id="nl-community" onclick="switchPage('community')">커뮤니티</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-date" id="headerDate"></div>
+    <div class="nav-score" id="headerScore">0pt 누적</div>
+  </div>
+</nav>
+
+<!-- ══════════════════════
+     HOME PAGE
+══════════════════════ -->
+<div class="page active" id="pageHome">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-circle"></div>
+    <div class="hero-bg-circle2"></div>
+    <div class="hero-left">
+      <div class="hero-tag">🌍 DAILY ECO CHALLENGE</div>
+      <h1 class="hero-title">작은 실천이<br><span class="hl">지구를 바꿔요</span></h1>
+      <p class="hero-desc">오늘 내가 한 환경 실천을 기록하고,<br>얼마나 기여했는지 눈으로 확인하세요.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="document.getElementById('practiceSection').scrollIntoView({behavior:'smooth'})">지금 시작하기</button>
+        <button class="btn-ghost" onclick="switchPage('community')">커뮤니티 보기</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hc-label">오늘의 기여</div>
+        <div class="hc-main" id="heroMain">0%</div>
+        <div class="hc-sub" id="heroCo2">실천 항목을 체크해보세요</div>
+      </div>
+      <div class="hero-mini-cards">
+        <div class="hmc">
+          <div class="hmc-val" id="heroItems">0</div>
+          <div class="hmc-label">오늘 실천</div>
+        </div>
+        <div class="hmc">
+          <div class="hmc-val" id="heroTotalPt">0</div>
+          <div class="hmc-label">오늘 포인트</div>
+        </div>
+        <div class="hmc">
+          <div class="hmc-val" id="heroStreak">0</div>
+          <div class="hmc-label">연속 일수</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="section section-gray" id="practiceSection">
+    <div class="section-eyebrow eyebrow-dark">오늘의 실천</div>
+    <h2 class="section-heading" style="margin-bottom:4px">무엇을 실천했나요?</h2>
+    <p class="section-sub">항목을 선택하면 바로 점수에 반영돼요</p>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="checklist-grid" id="checklist"></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="section">
+    <div class="section-eyebrow eyebrow-dark">오늘의 결과</div>
+    <h2 class="section-heading" style="margin-bottom:32px">지구 기여 현황</h2>
+    <div class="result-layout">
+      <div class="big-result-card">
+        <div class="brc-content">
+          <div class="brc-label">오늘 지구에</div>
+          <div class="brc-main" id="resultMain">아직 실천 전<br><span>🌱</span></div>
+          <div class="brc-co2" id="resultCo2"></div>
+          <div class="brc-items" id="resultItems"></div>
+          <div class="brc-btns">
+            <button class="brc-btn brc-btn-y" onclick="openShare(false)">📤 카드 보기</button>
+            <button class="brc-btn brc-btn-o" onclick="openShare(true)">🌏 커뮤니티 공유</button>
+          </div>
+        </div>
+        <div class="earth-wrap">
+          <canvas id="earthCanvas" width="220" height="220"></canvas>
+        </div>
+      </div>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="sc-val" id="scPts">0 <span>pt</span></div>
+          <div class="sc-label">오늘 획득 포인트</div>
+          <div class="sc-bar"><div class="sc-bar-fill" id="scBar" style="width:0%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-val" id="scCo2">0.00 <span>kg</span></div>
+          <div class="sc-label">CO₂ 절감량</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-val" id="scTotal">0 <span>pt</span></div>
+          <div class="sc-label">누적 포인트</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="section section-gray">
+    <div class="section-eyebrow eyebrow-dark">나의 기록</div>
+    <h2 class="section-heading" style="margin-bottom:28px">실천 히스토리</h2>
+    <div class="history-tabs-row">
+      <div class="htabs">
+        <button class="htab active" onclick="switchHist('week',this)">이번 주</button>
+        <button class="htab" onclick="switchHist('month',this)">이번 달</button>
+        <button class="htab" onclick="switchHist('cal',this)">캘린더</button>
+      </div>
+    </div>
+    <div class="history-chart-wrap" id="histContent"></div>
+  </section>
+
+  <!-- CTA BAND -->
+  <div class="cta-band">
+    <div>
+      <h2>오늘의 실천을 커뮤니티에 공유해보세요</h2>
+      <p>함께하면 더 큰 변화를 만들 수 있어요 🌍</p>
+    </div>
+    <button class="btn-dark" onclick="switchPage('community')">커뮤니티 가기 →</button>
+  </div>
+
+  <footer>
+    <div class="footer-logo">EcoLog 🌿</div>
+    <div class="footer-copy">나의 환경 기여 일지 · 지구를 위한 작은 실천</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════
+     COMMUNITY PAGE
+══════════════════════ -->
+<div class="page" id="pageCommunity">
+  <section class="hero" style="min-height:260px;padding:60px 80px">
+    <div class="hero-bg-circle"></div>
+    <div class="hero-left">
+      <div class="hero-tag">🌏 COMMUNITY</div>
+      <h1 class="hero-title" style="font-size:40px">함께 실천해요</h1>
+      <p class="hero-desc" style="margin-bottom:0">다른 사람들의 환경 실천 기록을 보고 서로 응원하세요.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="community-layout">
+      <!-- FEED -->
+      <div>
+        <div class="comm-topbar">
+          <div class="comm-search-wrap">
+            <span class="comm-search-icon">🔍</span>
+            <input class="comm-search-bar" id="commSearch" type="text" placeholder="닉네임, 내용, 실천 항목으로 검색..." oninput="setSearch(this.value)">
+          </div>
+          <div class="comm-cat-tabs" id="commCatTabs"></div>
+        </div>
+        <div class="feed-header">
+          <div class="sort-pills">
+            <button class="sort-pill active" id="sNew" onclick="setSort('new',this)">최신순</button>
+            <button class="sort-pill" id="sHot" onclick="setSort('hot',this)">인기순</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:13px;color:var(--gray-text)" id="postCount"></div>
+            <button class="write-btn" onclick="openWriteModal()">✏️ 글쓰기</button>
+          </div>
+        </div>
+        <div class="feed" id="feed"></div>
+      </div>
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="profile-card">
+          <div class="pc-avatar" id="pcAvatar">🌿</div>
+          <div class="pc-label">나의 닉네임</div>
+          <div class="pc-name" id="pcName">닉네임 없음</div>
+          <button class="pc-edit" onclick="openNickModal()">✏️ 닉네임 설정</button>
+        </div>
+        <div class="sidebar-card">
+          <h4>🏆 인기 게시물</h4>
+          <div id="topPosts"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ SHARE MODAL ══ -->
+<div class="modal-bg" id="shareModal" onclick="closeBg(event,'shareModal')">
+  <div class="modal-box">
+    <div class="modal-close-row"><button class="modal-close" onclick="closeModal('shareModal')">✕</button></div>
+    <div class="share-preview">
+      <div class="sp-logo">🌿 EcoLog</div>
+      <div class="sp-pct" id="spPct"><span>0%</span></div>
+      <div class="sp-co2" id="spCo2"></div>
+      <div class="sp-items" id="spItems"></div>
+      <div class="sp-date" id="spDate"></div>
+    </div>
+    <div class="modal-body">
+      <div id="msgWrap" style="display:none">
+        <textarea id="shareMsg" rows="2" placeholder="한마디 남기기 (선택사항)"></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="mbt mbt-ghost" onclick="copyText()">📋 텍스트 복사</button>
+        <button class="mbt mbt-primary" id="postBtn" style="display:none" onclick="postToCommunity()">🌏 게시하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NICK MODAL ══ -->
+<div class="modal-bg" id="nickModal" onclick="closeBg(event,'nickModal')">
+  <div class="nick-modal">
+    <h3>닉네임 설정</h3>
+    <p>커뮤니티에서 사용할 아바타와 이름을 설정해주세요</p>
+    <div class="avatar-grid" id="avatarGrid"></div>
+    <input class="nick-input" id="nickIn" type="text" maxlength="12" placeholder="닉네임 입력 (최대 12자)">
+    <button class="nick-save" onclick="saveNick()">저장하기</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════
+   DATA
+══════════════════════════ */
+const ITEMS=[
+  // ── 물절약 (22개) ──
+  {id:'w01',cat:'물절약',name:'샤워 5분 이내',sub:'기본 15분 대비 절약',pts:3,co2:0.40},
+  {id:'w02',cat:'물절약',name:'양치 시 물 잠그기',sub:'1회 기준',pts:1,co2:0.05},
+  {id:'w03',cat:'물절약',name:'설거지 물 받아서 하기',sub:'흐르는 물 대신',pts:2,co2:0.20},
+  {id:'w04',cat:'물절약',name:'빨래 찬물로 하기',sub:'온수 대신 냉수 세탁',pts:2,co2:0.50},
+  {id:'w05',cat:'물절약',name:'세탁기 가득 채워 돌리기',sub:'반쪽 세탁 자제',pts:2,co2:0.35},
+  {id:'w06',cat:'물절약',name:'욕조 대신 샤워 선택',sub:'1회 기준',pts:3,co2:0.60},
+  {id:'w07',cat:'물절약',name:'절수형 샤워헤드 사용',sub:'일반 대비 30% 절약',pts:2,co2:0.30},
+  {id:'w08',cat:'물절약',name:'화분에 채소 씻은 물 주기',sub:'물 재활용',pts:1,co2:0.05},
+  {id:'w09',cat:'물절약',name:'정수기 버리는 물 재활용',sub:'청소·화분에 활용',pts:1,co2:0.08},
+  {id:'w10',cat:'물절약',name:'음식 해동 흐르는 물 안 쓰기',sub:'냉장고 해동으로 전환',pts:1,co2:0.06},
+  {id:'w11',cat:'물절약',name:'빗물 받아 활용하기',sub:'화분·청소용',pts:2,co2:0.20},
+  {id:'w12',cat:'물절약',name:'양변기 절수 장치 설치',sub:'1회 물 사용량 20% 감소',pts:2,co2:0.15},
+  {id:'w13',cat:'물절약',name:'마당·베란다 청소 빗자루로',sub:'호스 물 대신',pts:1,co2:0.10},
+  {id:'w14',cat:'물절약',name:'수도꼭지 누수 점검',sub:'하루 1회 확인',pts:1,co2:0.05},
+  {id:'w15',cat:'물절약',name:'손 씻기 물 최소화',sub:'비누칠 중 물 잠그기',pts:1,co2:0.04},
+  {id:'w16',cat:'물절약',name:'설거지 전 음식물 먼저 닦기',sub:'물 사용량 감소',pts:1,co2:0.08},
+  {id:'w17',cat:'물절약',name:'헹굼 줄이는 세탁세제 사용',sub:'저포말 친환경 세제',pts:2,co2:0.20},
+  {id:'w18',cat:'물절약',name:'수영장·목욕탕 이용 자제',sub:'1회 기준',pts:2,co2:0.80},
+  {id:'w19',cat:'물절약',name:'가습기 대신 젖은 빨래 건조',sub:'전기 에너지도 절약',pts:1,co2:0.12},
+  {id:'w20',cat:'물절약',name:'냉각수 재활용하기',sub:'에어컨 응결수 활용',pts:1,co2:0.06},
+  {id:'w21',cat:'물절약',name:'물 절약 샤워 타이머 사용',sub:'5분 알람 활용',pts:1,co2:0.15},
+  {id:'w22',cat:'물절약',name:'주방 정수기 필터 관리',sub:'물 낭비 방지',pts:1,co2:0.05},
+  // ── 에너지 (22개) ──
+  {id:'en01',cat:'에너지',name:'냉·난방 1도 조절',sub:'설정온도 여름28도/겨울18도',pts:3,co2:0.60},
+  {id:'en02',cat:'에너지',name:'미사용 전자기기 플러그 뽑기',sub:'대기전력 차단',pts:1,co2:0.10},
+  {id:'en03',cat:'에너지',name:'에어컨 1시간 덜 쓰기',sub:'선풍기·자연바람 활용',pts:2,co2:0.60},
+  {id:'en04',cat:'에너지',name:'사용 안 하는 방 불 끄기',sub:'1회 이상',pts:1,co2:0.05},
+  {id:'en05',cat:'에너지',name:'멀티탭 전원 끄기',sub:'잠들기 전 확인',pts:2,co2:0.20},
+  {id:'en06',cat:'에너지',name:'컴퓨터 절전모드 설정',sub:'10분 이상 자리 비울 때',pts:1,co2:0.08},
+  {id:'en07',cat:'에너지',name:'낮에 자연채광 활용',sub:'전등 대신 햇빛 이용',pts:1,co2:0.06},
+  {id:'en08',cat:'에너지',name:'냉장고 문 빨리 닫기',sub:'열어 두는 시간 최소화',pts:1,co2:0.05},
+  {id:'en09',cat:'에너지',name:'냉장고 적정 온도 설정',sub:'냉장 3도·냉동 -18도',pts:1,co2:0.10},
+  {id:'en10',cat:'에너지',name:'전기밥솥 보온 끄기',sub:'먹을 때만 가열',pts:2,co2:0.30},
+  {id:'en11',cat:'에너지',name:'건조기 대신 자연 건조',sub:'빨랫줄·건조대 이용',pts:2,co2:0.80},
+  {id:'en12',cat:'에너지',name:'전기장판 대신 내복 입기',sub:'겨울철 난방 줄이기',pts:2,co2:0.40},
+  {id:'en13',cat:'에너지',name:'정수기 야간 전원 끄기',sub:'전력 낭비 방지',pts:1,co2:0.08},
+  {id:'en14',cat:'에너지',name:'에어컨 필터 청소하기',sub:'냉방 효율 향상',pts:2,co2:0.20},
+  {id:'en15',cat:'에너지',name:'스마트폰 화면 밝기 줄이기',sub:'배터리·전력 절약',pts:1,co2:0.03},
+  {id:'en16',cat:'에너지',name:'LED 조명 사용 확인',sub:'백열등·형광등 교체',pts:2,co2:0.15},
+  {id:'en17',cat:'에너지',name:'보일러 외출 모드 설정',sub:'장시간 집 비울 때',pts:2,co2:0.50},
+  {id:'en18',cat:'에너지',name:'창문 단열 점검하기',sub:'문풍지·뽁뽁이 붙이기',pts:2,co2:0.35},
+  {id:'en19',cat:'에너지',name:'TV 시청 1시간 줄이기',sub:'독서·산책으로 대체',pts:1,co2:0.08},
+  {id:'en20',cat:'에너지',name:'전자레인지 대신 냄비 데우기',sub:'소량 음식 가열 시',pts:1,co2:0.05},
+  {id:'en21',cat:'에너지',name:'태양광 보조배터리 사용',sub:'충전 시 재생에너지 활용',pts:2,co2:0.15},
+  {id:'en22',cat:'에너지',name:'에너지효율 1등급 가전 구매',sub:'가전 교체 시 기준',pts:3,co2:1.20},
+  // ── 이동·교통 (22개) ──
+  {id:'t01',cat:'이동',name:'대중교통 이용',sub:'자가용 대신 버스·지하철',pts:3,co2:2.10},
+  {id:'t02',cat:'이동',name:'도보 or 자전거 이동',sub:'30분 이상',pts:3,co2:1.50},
+  {id:'t03',cat:'이동',name:'계단 이용',sub:'엘리베이터 대신 3층 이상',pts:1,co2:0.02},
+  {id:'t04',cat:'이동',name:'공유자전거 이용',sub:'따릉이·카카오T바이크 등',pts:3,co2:1.30},
+  {id:'t05',cat:'이동',name:'카풀 참여',sub:'같은 방향 탑승자와',pts:2,co2:1.05},
+  {id:'t06',cat:'이동',name:'단거리 자동차 이용 안 하기',sub:'2km 이내 도보로',pts:2,co2:0.50},
+  {id:'t07',cat:'이동',name:'급출발·급제동 안 하기',sub:'연비 최대 20% 향상',pts:2,co2:0.40},
+  {id:'t08',cat:'이동',name:'자동차 공회전 안 하기',sub:'5분 이상 엔진 끄기',pts:2,co2:0.35},
+  {id:'t09',cat:'이동',name:'타이어 적정 공기압 유지',sub:'연비·안전 개선',pts:1,co2:0.20},
+  {id:'t10',cat:'이동',name:'전동킥보드 공유 이용',sub:'단거리 이동 시',pts:2,co2:0.60},
+  {id:'t11',cat:'이동',name:'배달 대신 직접 픽업',sub:'오토바이 배달 탄소 절감',pts:2,co2:0.30},
+  {id:'t12',cat:'이동',name:'드라이브스루 이용 자제',sub:'공회전 방지',pts:1,co2:0.15},
+  {id:'t13',cat:'이동',name:'비행기 대신 기차 이용',sub:'같은 구간 CO₂ 80% 절감',pts:3,co2:3.50},
+  {id:'t14',cat:'이동',name:'화상회의로 출장 대체',sub:'1회 기준',pts:3,co2:2.00},
+  {id:'t15',cat:'이동',name:'주말 차 없는 날 실천',sub:'하루 자동차 이용 안 하기',pts:3,co2:2.50},
+  {id:'t16',cat:'이동',name:'자전거 전용도로 이용',sub:'안전하고 친환경적',pts:2,co2:1.00},
+  {id:'t17',cat:'이동',name:'원격근무·재택근무 실천',sub:'출퇴근 탄소 절감',pts:3,co2:2.10},
+  {id:'t18',cat:'이동',name:'자동차 에어컨 창문으로 대체',sub:'시속 60km 이하 구간',pts:1,co2:0.25},
+  {id:'t19',cat:'이동',name:'대중교통 정기권 이용',sub:'꾸준한 이용 동기부여',pts:2,co2:1.50},
+  {id:'t20',cat:'이동',name:'전기차·하이브리드 이용',sub:'내연기관차 대비',pts:3,co2:1.80},
+  {id:'t21',cat:'이동',name:'여행 시 탄소 오프셋 구매',sub:'항공편 탄소 상쇄',pts:2,co2:0.50},
+  {id:'t22',cat:'이동',name:'자동차 트렁크 불필요한 짐 빼기',sub:'무게 줄여 연비 향상',pts:1,co2:0.10},
+  // ── 식생활 (22개) ──
+  {id:'f01',cat:'식생활',name:'채식 식사하기',sub:'1끼 기준',pts:3,co2:0.90},
+  {id:'f02',cat:'식생활',name:'로컬 푸드 구매',sub:'100km 이내 생산 식재료',pts:2,co2:0.40},
+  {id:'f03',cat:'식생활',name:'다회용기 직접 가져가기',sub:'포장 음식 담을 때',pts:2,co2:0.15},
+  {id:'f04',cat:'식생활',name:'음식 남기지 않기 (잔반제로)',sub:'1끼 기준',pts:2,co2:0.25},
+  {id:'f05',cat:'식생활',name:'제철 음식 먹기',sub:'수입 식재료 대신',pts:2,co2:0.35},
+  {id:'f06',cat:'식생활',name:'멸종위기 해산물 먹지 않기',sub:'그린피스 지속가능 어업 기준',pts:3,co2:0.50},
+  {id:'f07',cat:'식생활',name:'치어·생선알 먹지 않기',sub:'해양 생태계 보호',pts:2,co2:0.30},
+  {id:'f08',cat:'식생활',name:'과대포장 식품 구매 안 하기',sub:'간단 포장 제품 선택',pts:2,co2:0.20},
+  {id:'f09',cat:'식생활',name:'직접 요리해 먹기',sub:'배달 대신 홈쿡',pts:2,co2:0.60},
+  {id:'f10',cat:'식생활',name:'음식 보관 잘 해서 버리지 않기',sub:'유통기한 관리',pts:2,co2:0.30},
+  {id:'f11',cat:'식생활',name:'먹을 만큼만 장보기',sub:'식품 폐기 줄이기',pts:2,co2:0.40},
+  {id:'f12',cat:'식생활',name:'두부·콩류 단백질 섭취',sub:'육류 대신',pts:2,co2:0.60},
+  {id:'f13',cat:'식생활',name:'유기농 식재료 구매',sub:'1회 이상',pts:2,co2:0.20},
+  {id:'f14',cat:'식생활',name:'음식물 쓰레기 퇴비화',sub:'텃밭·화분용',pts:2,co2:0.30},
+  {id:'f15',cat:'식생활',name:'냉장고 정기 정리하기',sub:'식품 낭비 예방',pts:1,co2:0.15},
+  {id:'f16',cat:'식생활',name:'야식·간식 포장 줄이기',sub:'배달앱 이용 자제',pts:1,co2:0.20},
+  {id:'f17',cat:'식생활',name:'식물성 우유 선택',sub:'두유·귀리·아몬드유',pts:2,co2:0.45},
+  {id:'f18',cat:'식생활',name:'텃밭·베란다 채소 직접 키우기',sub:'소량이라도',pts:2,co2:0.30},
+  {id:'f19',cat:'식생활',name:'배달 일회용 수저 거절',sub:'주문 시 수저 안 받기',pts:1,co2:0.05},
+  {id:'f20',cat:'식생활',name:'냉동식품 이용 줄이기',sub:'신선식품 위주',pts:1,co2:0.20},
+  {id:'f21',cat:'식생활',name:'음료 포장 줄이기',sub:'캔·페트 대신 텀블러',pts:2,co2:0.11},
+  {id:'f22',cat:'식생활',name:'식재료 껍질·뿌리 활용 요리',sub:'음식물 쓰레기 최소화',pts:1,co2:0.10},
+  // ── 자원순환 (22개) ──
+  {id:'r01',cat:'자원순환',name:'분리수거 제대로 하기',sub:'재활용 가능 품목 분류',pts:2,co2:0.30},
+  {id:'r02',cat:'자원순환',name:'텀블러 사용',sub:'일회용 컵 대신',pts:2,co2:0.11},
+  {id:'r03',cat:'자원순환',name:'장바구니 사용',sub:'비닐봉투 거절',pts:2,co2:0.08},
+  {id:'r04',cat:'자원순환',name:'일회용 컵 거절',sub:'카페 다회용 컵 요청',pts:2,co2:0.11},
+  {id:'r05',cat:'자원순환',name:'중고 물품 구매',sub:'당근·중고나라 등',pts:3,co2:1.20},
+  {id:'r06',cat:'자원순환',name:'중고 물품 판매·나눔',sub:'필요 없는 물건 처리',pts:2,co2:0.80},
+  {id:'r07',cat:'자원순환',name:'폐휴대폰 공식 수거함 반납',sub:'대리점·주민센터 수거함',pts:3,co2:0.50},
+  {id:'r08',cat:'자원순환',name:'다회용 컵 카페 반납하기',sub:'탄소중립포인트 적립',pts:2,co2:0.15},
+  {id:'r09',cat:'자원순환',name:'택배 박스 재사용·접어두기',sub:'즉시 버리지 않기',pts:1,co2:0.10},
+  {id:'r10',cat:'자원순환',name:'빈 병 보증금 반환',sub:'공병 반납',pts:1,co2:0.08},
+  {id:'r11',cat:'자원순환',name:'플라스틱 라벨·뚜껑 분리배출',sub:'재활용률 향상',pts:1,co2:0.05},
+  {id:'r12',cat:'자원순환',name:'재활용품 세척 후 배출',sub:'오염 제거 후 분리수거',pts:1,co2:0.05},
+  {id:'r13',cat:'자원순환',name:'종이 양면 사용',sub:'프린트·메모지',pts:1,co2:0.04},
+  {id:'r14',cat:'자원순환',name:'전자영수증 발급받기',sub:'종이 영수증 거절',pts:1,co2:0.02},
+  {id:'r15',cat:'자원순환',name:'헌 옷 수거함에 기증',sub:'의류 폐기 대신',pts:2,co2:0.40},
+  {id:'r16',cat:'자원순환',name:'전자제품 수리해 쓰기',sub:'새 제품 구매 전 수리 시도',pts:3,co2:1.50},
+  {id:'r17',cat:'자원순환',name:'물티슈 대신 손수건 사용',sub:'하루 1회 이상',pts:1,co2:0.06},
+  {id:'r18',cat:'자원순환',name:'음식물 쓰레기 물기 충분히 빼기',sub:'부피·무게 줄이기',pts:1,co2:0.05},
+  {id:'r19',cat:'자원순환',name:'리필 가능한 용기 제품 구매',sub:'샴푸·세제 리필',pts:2,co2:0.30},
+  {id:'r20',cat:'자원순환',name:'포장재 없는 벌크 제품 선택',sub:'제로웨이스트 숍 이용',pts:2,co2:0.25},
+  {id:'r21',cat:'자원순환',name:'비닐봉지 여러 번 재사용',sub:'바로 버리지 않기',pts:1,co2:0.05},
+  {id:'r22',cat:'자원순환',name:'고체 샴푸·바디워시 사용',sub:'플라스틱 용기 줄이기',pts:2,co2:0.20},
+  // ── 자연·해양 보호 (21개) ──
+  {id:'n01',cat:'자연보호',name:'해변·공원 쓰레기 줍기',sub:'플로깅·비치코밍 1회',pts:3,co2:0.10},
+  {id:'n02',cat:'자연보호',name:'미세플라스틱 없는 세안제 사용',sub:'스크럽 제품 성분 확인',pts:2,co2:0.08},
+  {id:'n03',cat:'자연보호',name:'산호초 보호 선크림 사용',sub:'옥시벤존 프리 무기자차',pts:2,co2:0.05},
+  {id:'n04',cat:'자연보호',name:'세탁망(미세플라스틱 포집) 사용',sub:'합성섬유 세탁 시',pts:2,co2:0.10},
+  {id:'n05',cat:'자연보호',name:'친환경 세제 사용',sub:'생분해 세탁·주방세제',pts:2,co2:0.15},
+  {id:'n06',cat:'자연보호',name:'나무·식물 심기',sub:'베란다 텃밭 포함',pts:3,co2:0.30},
+  {id:'n07',cat:'자연보호',name:'자연보호구역 쓰레기 안 남기기',sub:'등산·캠핑 시',pts:2,co2:0.05},
+  {id:'n08',cat:'자연보호',name:'야생동물 먹이 주지 않기',sub:'생태계 교란 방지',pts:1,co2:0.01},
+  {id:'n09',cat:'자연보호',name:'외래종 식물·동물 구매 안 하기',sub:'국내 생태계 보호',pts:2,co2:0.05},
+  {id:'n10',cat:'자연보호',name:'탐방로 외 구역 출입 안 하기',sub:'식생 훼손 방지',pts:1,co2:0.01},
+  {id:'n11',cat:'자연보호',name:'담배꽁초 함부로 버리지 않기',sub:'환경 오염 방지',pts:1,co2:0.02},
+  {id:'n12',cat:'자연보호',name:'낙엽·음식물 퇴비화',sub:'탄소 격리 효과',pts:2,co2:0.20},
+  {id:'n13',cat:'자연보호',name:'환경단체 청원·서명 참여',sub:'온라인 1회 기준',pts:1,co2:0.01},
+  {id:'n14',cat:'자연보호',name:'환경 이슈 SNS 공유하기',sub:'인식 확산 기여',pts:1,co2:0.01},
+  {id:'n15',cat:'자연보호',name:'친환경 인증 제품 구매',sub:'환경마크 확인',pts:2,co2:0.20},
+  {id:'n16',cat:'자연보호',name:'생분해 비닐·포장재 선택',sub:'일반 플라스틱 대신',pts:2,co2:0.15},
+  {id:'n17',cat:'자연보호',name:'공유정원 가꾸기 참여',sub:'도시 녹지 조성',pts:2,co2:0.20},
+  {id:'n18',cat:'자연보호',name:'수질 오염 행위 신고하기',sub:'불법 투기 목격 시',pts:2,co2:0.05},
+  {id:'n19',cat:'자연보호',name:'식물 물 주기 (직접 키우기)',sub:'탄소 흡수 식물 유지',pts:1,co2:0.02},
+  {id:'n20',cat:'자연보호',name:'생태계 다양성 지키는 어획법 지지',sub:'MSC 인증 수산물 선택',pts:2,co2:0.20},
+  {id:'n21',cat:'자연보호',name:'빗물 정원 만들기',sub:'도시 홍수 완화·생태 복원',pts:3,co2:0.15},
+  // ── 친환경 소비 (22개) ──
+  {id:'c01',cat:'친환경소비',name:'이메일 100개 이상 삭제',sub:'디지털 탄소 절감',pts:1,co2:0.03},
+  {id:'c02',cat:'친환경소비',name:'불필요한 구독 서비스 해지',sub:'클라우드·스트리밍 정리',pts:1,co2:0.05},
+  {id:'c03',cat:'친환경소비',name:'오래 쓸 수 있는 내구성 제품 선택',sub:'저가 소모품 대신',pts:3,co2:1.50},
+  {id:'c04',cat:'친환경소비',name:'24시간 고민 후 구매',sub:'충동구매 방지',pts:2,co2:0.80},
+  {id:'c05',cat:'친환경소비',name:'패스트패션 구매 안 하기',sub:'저가 의류 충동구매 자제',pts:3,co2:2.00},
+  {id:'c06',cat:'친환경소비',name:'대나무 칫솔 사용',sub:'플라스틱 칫솔 대신',pts:1,co2:0.05},
+  {id:'c07',cat:'친환경소비',name:'고체 치약 사용',sub:'플라스틱 튜브 절감',pts:1,co2:0.04},
+  {id:'c08',cat:'친환경소비',name:'면 생리대·월경컵 사용',sub:'일회용 대신',pts:2,co2:0.30},
+  {id:'c09',cat:'친환경소비',name:'리필 가능한 문구류 사용',sub:'볼펜 리필심 교체',pts:1,co2:0.03},
+  {id:'c10',cat:'친환경소비',name:'도서관에서 책 빌려 읽기',sub:'새 책 구매 자제',pts:1,co2:0.15},
+  {id:'c11',cat:'친환경소비',name:'비건 화장품·생활용품 선택',sub:'동물실험 없는 제품',pts:2,co2:0.10},
+  {id:'c12',cat:'친환경소비',name:'과대포장 제품 반품·거절',sub:'판매사에 피드백',pts:2,co2:0.30},
+  {id:'c13',cat:'친환경소비',name:'광고 문자·스팸메일 차단하기',sub:'디지털 탄소 감소',pts:1,co2:0.02},
+  {id:'c14',cat:'친환경소비',name:'친환경 마크 확인 후 구매',sub:'환경부 환경마크',pts:2,co2:0.20},
+  {id:'c15',cat:'친환경소비',name:'중고 가전 구매',sub:'새 제품 생산 탄소 절감',pts:3,co2:1.80},
+  {id:'c16',cat:'친환경소비',name:'무형광·천연 세탁세제 사용',sub:'수질 오염 방지',pts:1,co2:0.08},
+  {id:'c17',cat:'친환경소비',name:'비건 가죽·인조모피 제품 선택',sub:'동물성 소재 대신',pts:2,co2:0.50},
+  {id:'c18',cat:'친환경소비',name:'스마트폰 오래 쓰기',sub:'교체 주기 늘리기',pts:3,co2:2.00},
+  {id:'c19',cat:'친환경소비',name:'종이 청구서 대신 전자청구서',sub:'자동이체·앱 청구서',pts:1,co2:0.02},
+  {id:'c20',cat:'친환경소비',name:'자판기 일회용 컵 거절',sub:'개인 컵 지참',pts:1,co2:0.05},
+  {id:'c21',cat:'친환경소비',name:'공정무역 제품 구매',sub:'커피·초콜릿 등',pts:2,co2:0.10},
+  {id:'c22',cat:'친환경소비',name:'친환경 배송 옵션 선택',sub:'묶음배송·친환경포장',pts:1,co2:0.20},
+];
+const CATS=['전체','물절약','에너지','이동','식생활','자원순환','자연보호','친환경소비'];
+const MAX_PTS=ITEMS.reduce((a,b)=>a+b.pts,0);
+const AVATARS=['🌿','🌱','🍃','🌲','🌊','☀️','🦋','🐝','🌸','🌻','🐢','🦭'];
+
+/* ══════════════════════════
+   STORAGE
+══════════════════════════ */
+const today=()=>new Date().toISOString().slice(0,10);
+const ls=(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch{return f;}};
+const lsSet=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const loadData=()=>ls('ecolog_data',{});
+const saveData=d=>lsSet('ecolog_data',d);
+const todayChecked=()=>loadData()[today()]||{};
+function setChecked(id,val){const d=loadData();if(!d[today()])d[today()]={};d[today()][id]=val;saveData(d);}
+const loadPosts=()=>ls('ecolog_posts',null);
+const savePosts=p=>lsSet('ecolog_posts',p);
+const loadProfile=()=>ls('ecolog_profile',{nick:'',avatar:'🌿'});
+const saveProfile=p=>lsSet('ecolog_profile',p);
+
+/* ══════════════════════════
+   SEED POSTS
+══════════════════════════ */
+const SEED=[
+  {id:'s1',nick:'초록지구인',avatar:'🌊',date:'2026-05-29',pct:72,co2:3.85,pts:26,items:['대중교통 이용','텀블러 사용','채식 식사하기','분리수거 제대로 하기'],cat:'이동',message:'출퇴근 내내 버스 탔어요! 작은 습관이지만 뿌듯하네요 🙂',likes:14,likedByMe:false,comments:[{nick:'에코린이',avatar:'🌱',text:'저도 오늘 텀블러 챙겼어요! 같이 해봐요 💚'},{nick:'그린워리어',avatar:'🦋',text:'채식까지 하셨군요, 대단해요!'}]},
+  {id:'s2',nick:'자전거러버',avatar:'☀️',date:'2026-05-28',pct:83,co2:5.20,pts:30,items:['도보 or 자전거 이동','대중교통 이용','채식 식사하기','텀블러 사용','에어컨 1시간 덜 쓰기'],cat:'이동',message:'자전거로 왕복 40km! 탄소 절감도 되고 운동도 되고 🚴',likes:37,likedByMe:false,comments:[{nick:'제로웨이스트',avatar:'♻️',text:'40km 대단해요!! 저도 자전거 사고싶어졌어요'},{nick:'에코린이',avatar:'🌱',text:'멋지다 나도 따라해볼게요!'}]},
+  {id:'s3',nick:'제로웨이스트',avatar:'♻️',date:'2026-05-28',pct:55,co2:2.10,pts:20,items:['장바구니 사용','빨래 찬물로 하기','계단 이용','음식 남기지 않기'],cat:'자원순환',message:'마트 갈 때 장바구니 6개 챙겨갔어요 😄 비닐 제로!',likes:21,likedByMe:false,comments:[{nick:'초록지구인',avatar:'🌊',text:'오 대박 6개나요?? 👏'}]},
+  {id:'s4',nick:'에코린이',avatar:'🌱',date:'2026-05-28',pct:28,co2:0.96,pts:10,items:['양치 시 물 잠그기','식물 물 주기','이메일 100개 이상 삭제'],cat:'일상',message:'환경 실천 처음인데 작은 것부터 시작해봐요!',likes:9,likedByMe:false,comments:[]},
+  {id:'s5',nick:'그린워리어',avatar:'🦋',date:'2026-05-27',pct:44,co2:1.68,pts:16,items:['중고 물품 구매','분리수거 제대로 하기','냉·난방 1도 조절'],cat:'친환경소비',message:'당근에서 책상 샀어요! 새 제품 안 사면 탄소도 줄고 돈도 절약 👍',likes:18,likedByMe:false,comments:[{nick:'초록지구인',avatar:'🌊',text:'중고 구매 완전 실천왕!'}]},
+  {id:'s6',nick:'플로깅러',avatar:'🌊',date:'2026-05-27',pct:60,co2:4.20,pts:22,items:['해변·공원 쓰레기 줍기','도보 or 자전거 이동','텀블러 사용','분리수거 제대로 하기'],cat:'자연보호',message:'오늘 한강공원 플로깅 1시간! 쓰레기 봉투 2개 채웠어요 💪',likes:28,likedByMe:false,comments:[{nick:'초록지구인',avatar:'🌊',text:'플로깅 대단해요! 저도 해봐야겠어요'},{nick:'에코린이',avatar:'🌱',text:'2봉투나요?? 👏'}]},
+  {id:'s7',nick:'에너지절약왕',avatar:'☀️',date:'2026-05-26',pct:45,co2:2.80,pts:16,items:['냉·난방 1도 조절','미사용 전자기기 플러그 뽑기','건조기 대신 자연 건조','전기밥솥 보온 끄기'],cat:'에너지',message:'이번 달 전기세 20% 줄었어요 절약하면서 환경도 보호!',likes:19,likedByMe:false,comments:[{nick:'자전거러버',avatar:'☀️',text:'20%나요? 어떻게 하셨어요 노하우 공유해주세요~'}]},
+  {id:'s8',nick:'텃밭농부',avatar:'🌸',date:'2026-05-26',pct:38,co2:1.90,pts:14,items:['텃밭·베란다 채소 직접 키우기','식물 물 주기','음식물 쓰레기 퇴비화','제철 음식 먹기'],cat:'식생활',message:'베란다 토마토 첫 수확!! 🍅 직접 키운 건 맛이 달라요',likes:45,likedByMe:false,comments:[{nick:'에코린이',avatar:'🌱',text:'와 토마토 탐난다ㅋㅋ 저도 키워볼게요!'},{nick:'제로웨이스트',avatar:'♻️',text:'퇴비까지! 완벽한 순환이네요 🌱'}]},
+  {id:'s9',nick:'제로쓰레기',avatar:'♻️',date:'2026-05-25',pct:52,co2:3.10,pts:19,items:['텀블러 사용','장바구니 사용','중고 물품 구매','포장재 없는 벌크 제품 선택','고체 샴푸·바디워시 사용'],cat:'자원순환',message:'오늘 제로웨이스트 샵 다녀왔어요! 벌크 세제+고체샴푸로 교체 완료 🛒',likes:31,likedByMe:false,comments:[{nick:'텃밭농부',avatar:'🌸',text:'어느 샵이에요? 저도 가고싶어요!'},{nick:'초록지구인',avatar:'🌊',text:'고체샴푸 좋죠! 저도 6개월째 쓰고 있어요'}]},
+  {id:'s10',nick:'대중교통맨',avatar:'🐢',date:'2026-05-25',pct:70,co2:5.50,pts:25,items:['대중교통 이용','공유자전거 이용','계단 이용','텀블러 사용','채식 식사하기'],cat:'이동',message:'오늘 하루 자동차 제로! 지하철+따릉이로 전부 이동했어요 🚇🚲',likes:22,likedByMe:false,comments:[{nick:'자전거러버',avatar:'☀️',text:'따릉이 좋죠! 저도 오늘 탔어요 ㅎㅎ'}]},
+  {id:'s11',nick:'채식러버',avatar:'🌻',date:'2026-05-24',pct:35,co2:2.20,pts:13,items:['채식 식사하기','식물성 우유 선택','두부·콩류 단백질 섭취','로컬 푸드 구매'],cat:'식생활',message:'비건 버거 도전! 생각보다 너무 맛있어서 놀랐어요 🍔',likes:16,likedByMe:false,comments:[{nick:'에코린이',avatar:'🌱',text:'어디 비건버거요? 저도 먹고싶어요ㅠ'}]},
+  {id:'s12',nick:'수리장인',avatar:'🦋',date:'2026-05-24',pct:48,co2:3.80,pts:17,items:['전자제품 수리해 쓰기','오래 쓸 수 있는 내구성 제품 선택','중고 물품 구매'],cat:'친환경소비',message:'3년 쓴 노트북 키보드 직접 교체! 새거 사지 않아도 될 것 같아요 💻',likes:38,likedByMe:false,comments:[{nick:'제로웨이스트',avatar:'♻️',text:'수리 능력자!! 저는 도저히 못하겠던데...'},{nick:'그린워리어',avatar:'🦋',text:'수리 유튜브 보면서 따라했나요? 대단해요!'}]},
+  {id:'s13',nick:'물절약왕',avatar:'💧',date:'2026-05-23',pct:25,co2:1.20,pts:9,items:['샤워 5분 이내','양치 시 물 잠그기','설거지 물 받아서 하기'],cat:'물절약',message:'샤워 타이머 앱 쓴 지 2주째! 확실히 5분 안에 끝나요 ⏱️',likes:12,likedByMe:false,comments:[]},
+  {id:'s14',nick:'해양지킴이',avatar:'🦭',date:'2026-05-23',pct:42,co2:1.60,pts:15,items:['해변·공원 쓰레기 줍기','미세플라스틱 없는 세안제 사용','산호초 보호 선크림 사용'],cat:'자연보호',message:'해운대 비치코밍 다녀왔어요 🏖️ 미세플라스틱 조각들이 너무 많아서 마음이 아팠지만 오늘도 조금 지켰어요',likes:41,likedByMe:false,comments:[{nick:'플로깅러',avatar:'🌊',text:'수고하셨어요ㅠ 저도 다음에 같이 가요!'},{nick:'텃밭농부',avatar:'🌸',text:'정말 소중한 실천이에요 💚'}]},
+  {id:'s15',nick:'에코입문',avatar:'🌱',date:'2026-05-22',pct:18,co2:0.45,pts:6,items:['텀블러 사용','일회용 컵 거절','장바구니 사용'],cat:'일상',message:'환경 실천 첫날! 텀블러 들고 카페 갔는데 직원분이 칭찬해주셔서 뿌듯했어요 ☕',likes:25,likedByMe:false,comments:[{nick:'초록지구인',avatar:'🌊',text:'잘하셨어요! 시작이 반이에요 💚'},{nick:'에코린이',avatar:'🌱',text:'저도 처음엔 그랬어요 ㅎㅎ 금방 습관돼요!'},{nick:'텃밭농부',avatar:'🌸',text:'화이팅!! 함께해요 🌿'}]},
+  {id:'s16',nick:'그린오피스',avatar:'🌲',date:'2026-05-22',pct:32,co2:1.10,pts:12,items:['종이 양면 사용','전자영수증 발급받기','컴퓨터 절전모드 설정','이메일 100개 이상 삭제'],cat:'에너지',message:'오피스에서도 실천해요! 프린트 줄이고 이메일 정리하면 디지털 탄소도 줄어요 💼',likes:17,likedByMe:false,comments:[{nick:'에너지절약왕',avatar:'☀️',text:'디지털 탄소는 생각 못했어요! 저도 이메일 지워야겠다'}]},
+  {id:'s17',nick:'카풀친구',avatar:'🚗',date:'2026-05-21',pct:55,co2:4.30,pts:20,items:['카풀 참여','단거리 자동차 이용 안 하기','급출발·급제동 안 하기'],cat:'이동',message:'오늘부터 회사 동료와 카풀 시작! 기름값도 아끼고 탄소도 절감 일석이조 🚗',likes:14,likedByMe:false,comments:[{nick:'대중교통맨',avatar:'🐢',text:'카풀 좋은 방법이에요! 저도 추진해볼게요'}]},
+  {id:'s18',nick:'친환경맘',avatar:'🌻',date:'2026-05-21',pct:50,co2:2.60,pts:18,items:['다회용기 직접 가져가기','음식 남기지 않기 (잔반제로)','배달 일회용 수저 거절','면 생리대·월경컵 사용'],cat:'친환경소비',message:'아이한테 환경 실천 가르쳐주면서 저도 배우는 중이에요 🌿 오늘은 같이 장바구니 만들었어요',likes:29,likedByMe:false,comments:[{nick:'에코입문',avatar:'🌱',text:'아이한테 너무 좋은 교육이에요! 👍'},{nick:'텃밭농부',avatar:'🌸',text:'장바구니 직접 만든 거예요?? 대박'}]},
+  {id:'s19',nick:'절수생활',avatar:'💧',date:'2026-05-20',pct:30,co2:1.50,pts:11,items:['샤워 5분 이내','빗물 받아 활용하기','빨래 찬물로 하기','세탁기 가득 채워 돌리기'],cat:'물절약',message:'베란다에 빗물통 설치했어요! 화분에 주는 물 전부 해결 가능 🌧️',likes:20,likedByMe:false,comments:[{nick:'텃밭농부',avatar:'🌸',text:'오 빗물통 아이디어 좋아요! 저도 해야겠어요'}]},
+  {id:'s20',nick:'숲지킴이',avatar:'🌲',date:'2026-05-20',pct:40,co2:1.30,pts:15,items:['나무·식물 심기','공유정원 가꾸기 참여','탐방로 외 구역 출입 안 하기','환경단체 청원·서명 참여'],cat:'자연보호',message:'오늘 도시숲 조성 봉사활동 다녀왔어요 🌳 나무 5그루 심었습니다!',likes:35,likedByMe:false,comments:[{nick:'플로깅러',avatar:'🌊',text:'봉사활동까지!! 진짜 실천왕이에요 🏆'},{nick:'해양지킴이',avatar:'🦭',text:'어디서 신청했어요? 저도 참여하고싶어요'}]},
+];
+if(!loadPosts())savePosts(SEED);
+
+/* ══════════════════════════
+   PAGE SWITCH
+══════════════════════════ */
+let currentPage='home';
+function switchPage(p){
+  currentPage=p;
+  document.getElementById('pageHome').classList.toggle('active',p==='home');
+  document.getElementById('pageCommunity').classList.toggle('active',p==='community');
+  document.getElementById('nl-home').classList.toggle('active',p==='home');
+  document.getElementById('nl-community').classList.toggle('active',p==='community');
+  if(p==='community')renderFeed();
+}
+
+/* ══════════════════════════
+   CHECKLIST
+══════════════════════════ */
+let activeCat='전체';
+function renderTabs(){
+  document.getElementById('catTabs').innerHTML=CATS.map(c=>
+    `<button class="cat-tab${c===activeCat?' active':''}" onclick="setTab('${c}')">${c}</button>`
+  ).join('');
+}
+function setTab(c){activeCat=c;renderTabs();renderChecklist();}
+function renderChecklist(){
+  const ck=todayChecked();
+  const list=activeCat==='전체'?ITEMS:ITEMS.filter(i=>i.cat===activeCat);
+  document.getElementById('checklist').innerHTML=list.map(item=>`
+    <div class="check-item${ck[item.id]?' checked':''}" onclick="toggle('${item.id}')">
+      <div class="check-icon">${ck[item.id]?'✓':''}</div>
+      <div class="check-info">
+        <div class="check-name">${item.name}</div>
+        <div class="check-sub">${item.sub}</div>
+      </div>
+      <div class="check-pts">+${item.pts}pt</div>
+    </div>`).join('');
+}
+function toggle(id){
+  setChecked(id,!todayChecked()[id]);
+  renderChecklist();updateResult();updateHeader();updateHistory();
+  showToast(todayChecked()[id]?'✅ 실천 기록됐어요!':'↩️ 취소됐어요');
+}
+
+/* ══════════════════════════
+   STATS
+══════════════════════════ */
+function getStats(){
+  const ck=todayChecked();
+  const done=ITEMS.filter(i=>ck[i.id]);
+  const pts=done.reduce((a,b)=>a+b.pts,0);
+  const co2=done.reduce((a,b)=>a+b.co2,0);
+  const pct=Math.round(pts/MAX_PTS*100);
+  return {done,pts,co2,pct};
+}
+function getTotalPts(){
+  const d=loadData();let t=0;
+  for(const day of Object.values(d))for(const[id,v]of Object.entries(day))if(v){const it=ITEMS.find(i=>i.id===id);if(it)t+=it.pts;}
+  return t;
+}
+function getStreak(){
+  const d=loadData();let s=0,cur=new Date();
+  for(let i=0;i<365;i++){const ds=new Date(cur);ds.setDate(ds.getDate()-i);const key=ds.toISOString().slice(0,10);const day=d[key]||{};const pts=ITEMS.filter(it=>day[it.id]).reduce((a,b)=>a+b.pts,0);if(pts>0)s++;else if(i>0)break;}
+  return s;
+}
+
+function updateResult(){
+  const{done,pts,co2,pct}=getStats();
+  // hero
+  document.getElementById('heroMain').textContent=pct+'%';
+  document.getElementById('heroCo2').textContent=done.length?`CO₂ ${co2.toFixed(2)}kg 절감`:'실천 항목을 체크해보세요';
+  document.getElementById('heroItems').textContent=done.length;
+  document.getElementById('heroTotalPt').textContent=pts;
+  document.getElementById('heroStreak').textContent=getStreak();
+  // result section
+  const mainEl=document.getElementById('resultMain');
+  mainEl.innerHTML=done.length===0?'아직 실천 전<br><span>🌱</span>':`<span>${pct}%</span> 기여했어요!`;
+  document.getElementById('resultCo2').innerHTML=done.length?`약 <b>${co2.toFixed(2)}kg</b> CO₂ 절감`:'';
+  document.getElementById('resultItems').innerHTML=done.length?done.map(i=>`✔ ${i.name}`).join('  ·  '):'';
+  // stat cards
+  document.getElementById('scPts').innerHTML=`${pts} <span>pt</span>`;
+  document.getElementById('scBar').style.width=`${pct}%`;
+  document.getElementById('scCo2').innerHTML=`${co2.toFixed(2)} <span>kg</span>`;
+  document.getElementById('scTotal').innerHTML=`${getTotalPts()} <span>pt</span>`;
+  // Earth animation target
+  earthTargetPct = pct;
+}
+
+function updateHeader(){
+  document.getElementById('headerScore').textContent=`${getTotalPts()}pt 누적`;
+  const now=new Date();const days=['일','월','화','수','목','금','토'];
+  document.getElementById('headerDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+}
+
+/* ══════════════════════════
+   HISTORY
+══════════════════════════ */
+let histMode='week';
+function switchHist(m,el){histMode=m;document.querySelectorAll('.htab').forEach(e=>e.classList.remove('active'));el.classList.add('active');updateHistory();}
+function getDayPts(ds){const d=loadData()[ds]||{};return ITEMS.filter(i=>d[i.id]).reduce((a,b)=>a+b.pts,0);}
+function updateHistory(){
+  const wrap=document.getElementById('histContent');
+  if(histMode==='week')wrap.innerHTML=renderWeekChart();
+  else if(histMode==='month')wrap.innerHTML=renderMonthChart();
+  else wrap.innerHTML=renderCal();
+}
+let selectedDayDs = null;
+
+function renderWeekChart(){
+  const dn=['일','월','화','수','목','금','토'],now=new Date();
+  const rows=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    rows.push({label:dn[d.getDay()],pts:getDayPts(ds),ds,isT:ds===today()});
+  }
+  // default selected to today if not set or out of range
+  if(!selectedDayDs||!rows.find(r=>r.ds===selectedDayDs)) selectedDayDs=today();
+  const max=Math.max(...rows.map(r=>r.pts),1);
+  const bars=rows.map(r=>{
+    const isSel=r.ds===selectedDayDs;
+    const barClass='bar-fill-d'+(r.isT?' today':'')+(isSel&&r.pts>0?' bar-active':'');
+    const emptyClass='bar-fill-empty'+(r.isT?' today-empty':'');
+    return `<div class="bar-col${isSel?' bar-selected':''}" onclick="selectWeekDay('${r.ds}')">
+      <div class="bar-wrap">
+        ${r.pts>0
+          ?`<div class="${barClass}" style="height:${Math.max(r.pts/max*100,3)}%"><span class="bar-tip">${r.pts}</span></div>`
+          :`<div class="${emptyClass}"></div>`
+        }
+      </div>
+      <div class="bar-lbl">${r.label}${r.isT?'<br><span style="color:var(--yellow);font-size:9px">오늘</span>':''}${r.pts===0?'<div class="bar-lbl-miss">미실천</div>':''}</div>
+    </div>`;
+  }).join('');
+  return `<div style="display:flex;flex-direction:column;gap:0">
+    <div class="bar-chart-desktop">${bars}</div>
+    ${renderDayDetail(selectedDayDs)}
+  </div>`;
+}
+
+function selectWeekDay(ds){
+  selectedDayDs=ds;
+  updateHistory();
+}
+
+function getDayCo2(ds){const d=loadData()[ds]||{};return ITEMS.filter(i=>d[i.id]).reduce((a,b)=>a+b.co2,0);}
+function getDayItems(ds){const d=loadData()[ds]||{};return ITEMS.filter(i=>d[i.id]);}
+
+function renderDayDetail(ds){
+  const pts=getDayPts(ds);
+  const co2=getDayCo2(ds);
+  const items=getDayItems(ds);
+  const pct=Math.round(pts/MAX_PTS*100);
+  const dateObj=new Date(ds+'T00:00:00');
+  const dn=['일','월','화','수','목','금','토'];
+  const isToday=ds===today();
+  const label=isToday?'오늘 ('+ds.slice(5).replace('-','월 ')+'일)':ds.slice(5).replace('-','월 ')+'일 ('+dn[dateObj.getDay()]+'요일)';
+  if(pts===0){
+    return `<div class="day-detail-panel">
+      <div class="day-detail-header"><div class="dd-date-label">📅 ${label}</div></div>
+      <div class="day-detail-empty-body">이 날은 실천 기록이 없어요 🌱<br><small style="font-size:12px">오늘부터 시작해도 충분해요!</small></div>
+    </div>`;
+  }
+  return `<div class="day-detail-panel day-detail-has">
+    <div class="day-detail-header">
+      <div class="dd-date-label">📅 ${label}</div>
+      <div class="dd-badges">
+        <span class="dd-badge dd-badge-pct">🌍 ${pct}% 기여</span>
+        <span class="dd-badge dd-badge-co2">CO₂ ${co2.toFixed(2)}kg 절감</span>
+        <span class="dd-badge dd-badge-pts">${pts}pt</span>
+      </div>
+    </div>
+    <div class="day-detail-body">
+      <div class="dd-items-wrap">${items.map(i=>`<span class="dd-item-chip">✔ ${i.name}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function renderMonthChart(){
+  const now=new Date(),y=now.getFullYear(),m=now.getMonth(),last=new Date(y,m+1,0).getDate();
+  const weeks=[];let wpts=0,wco2=0,wcnt=0,wn=1;
+  for(let d=1;d<=last;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dd=loadData()[ds]||{};const di=ITEMS.filter(i=>dd[i.id]);
+    wpts+=di.reduce((a,b)=>a+b.pts,0);wco2+=di.reduce((a,b)=>a+b.co2,0);wcnt+=di.length;
+    if(new Date(y,m,d).getDay()===6||d===last){weeks.push({label:`${wn}주차`,pts:wpts,co2:wco2,cnt:wcnt});wpts=0;wco2=0;wcnt=0;wn++;}
+  }
+  const max=Math.max(...weeks.map(w=>w.pts),1);
+  const cols=weeks.length;
+  const cards=weeks.map(w=>{
+    const pct=Math.round(w.pts/MAX_PTS*100);
+    const hasData=w.pts>0;
+    return `<div class="month-week-card${hasData?' has-data':''}">
+      <div class="mwc-label">${w.label}</div>
+      <div class="mwc-bar-wrap"><div class="mwc-bar" style="height:${hasData?Math.max(w.pts/max*100,4):0}%"></div></div>
+      ${hasData
+        ?`<div class="mwc-pct">${pct}%</div>
+          <div class="mwc-co2">CO₂ ${w.co2.toFixed(1)}kg 절감</div>
+          <div class="mwc-cnt">실천 ${w.cnt}개</div>`
+        :`<div class="mwc-pct mwc-pct-zero">—</div><div class="mwc-cnt">기록 없음</div>`}
+    </div>`;
+  }).join('');
+  return `<div style="margin-bottom:16px"><strong style="font-size:14px;color:var(--dark)">${y}년 ${m+1}월 주별 요약</strong></div>
+    <div class="month-grid" style="grid-template-columns:repeat(${cols},1fr)">${cards}</div>`;
+}
+let selectedCalDs=null;
+function renderCal(){
+  const now=new Date(),y=now.getFullYear(),m=now.getMonth();
+  if(!selectedCalDs){selectedCalDs=today();}
+  const first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();
+  let cells='';
+  for(let i=0;i<first;i++)cells+='<div class="cal-cell-d empty"></div>';
+  for(let d=1;d<=last;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const pts=getDayPts(ds);const isT=ds===today();const isSel=ds===selectedCalDs;
+    const bg=pts===0?'var(--gray-bg)':`rgba(255,224,0,${0.2+Math.min(pts/10,1)*0.8})`;
+    cells+=`<div class="cal-cell-d${isT?' today':''}${isSel?' cal-selected':''}" style="background:${bg};color:${pts?'var(--dark)':'var(--gray-text)'}" onclick="selectCalDay('${ds}')" title="${d}일 ${pts}pt">${d}</div>`;
+  }
+  return `<div style="margin-bottom:14px"><strong style="font-size:15px;color:var(--dark)">${y}년 ${m+1}월</strong></div>
+    <div class="cal-days-h">${['일','월','화','수','목','금','토'].map(d=>`<span>${d}</span>`).join('')}</div>
+    <div class="cal-grid-d">${cells}</div>
+    ${renderDayDetail(selectedCalDs)}`;
+}
+function selectCalDay(ds){selectedCalDs=ds;updateHistory();}
+
+/* ══════════════════════════
+   SHARE
+══════════════════════════ */
+let shareGoPost=false;
+function openShare(gp){
+  shareGoPost=gp;
+  const{done,co2,pct}=getStats();
+  document.getElementById('spPct').innerHTML=`<span>${pct}%</span> 기여`;
+  document.getElementById('spCo2').textContent=done.length?`CO₂ ${co2.toFixed(2)}kg 절감`:'';
+  document.getElementById('spItems').textContent=done.map(i=>i.name).join(' · ');
+  document.getElementById('spDate').textContent=today();
+  document.getElementById('msgWrap').style.display=gp?'block':'none';
+  document.getElementById('postBtn').style.display=gp?'':'none';
+  document.getElementById('shareModal').classList.add('open');
+}
+function copyText(){
+  const{done,co2,pct}=getStats();
+  const txt=`🌍 오늘 지구에 ${pct}% 기여했어요!\n♻️ CO₂ ${co2.toFixed(2)}kg 절감\n✅ ${done.map(i=>i.name).join(', ')}\n\n#EcoLog #환경실천 #지구기여일지`;
+  navigator.clipboard.writeText(txt).then(()=>{showToast('📋 복사됐어요!');closeModal('shareModal');});
+}
+function postToCommunity(){
+  const prof=loadProfile();
+  if(!prof.nick){showToast('먼저 닉네임을 설정해주세요!');closeModal('shareModal');openNickModal();return;}
+  const{done,co2,pct,pts}=getStats();
+  if(!done.length){showToast('실천 항목을 먼저 체크해주세요!');return;}
+  const msg=document.getElementById('shareMsg').value.trim();
+  const posts=loadPosts()||[];
+  posts.unshift({id:'p'+Date.now(),nick:prof.nick,avatar:prof.avatar,date:today(),pct,co2,pts,items:done.map(i=>i.name),message:msg,likes:0,likedByMe:false,comments:[]});
+  savePosts(posts);
+  document.getElementById('shareMsg').value='';
+  closeModal('shareModal');
+  showToast('🌏 커뮤니티에 공유됐어요!');
+  switchPage('community');
+}
+
+/* ══════════════════════════
+   COMMUNITY
+══════════════════════════ */
+const COMM_CATS=['전체','물절약','에너지','이동','식생활','자원순환','자연보호','친환경소비','일상'];
+let sortMode='new';
+let commCat='전체';
+let searchQuery='';
+let writeSelCat='일상';
+let writeEcoOn=false;
+
+function setSort(m,el){sortMode=m;document.querySelectorAll('.sort-pill').forEach(e=>e.classList.remove('active'));el.classList.add('active');renderFeed();}
+function setCommCat(c){commCat=c;renderCommCatTabs();renderFeed();}
+function renderCommCatTabs(){
+  const el=document.getElementById('commCatTabs');if(!el)return;
+  el.innerHTML=COMM_CATS.map(c=>`<button class="comm-cat-tab${c===commCat?' active':''}" onclick="setCommCat('${c}')">${c}</button>`).join('');
+}
+function setSearch(q){searchQuery=q;renderFeed();}
+function renderFeed(){
+  let posts=[...(loadPosts()||[])];
+  if(sortMode==='hot')posts.sort((a,b)=>b.likes-a.likes);
+  if(commCat!=='전체'){
+    posts=posts.filter(p=>{
+      if((p.cat||'일상')===commCat)return true;
+      if(p.items&&p.items.some(name=>{const it=ITEMS.find(i=>i.name===name);return it&&it.cat===commCat;}))return true;
+      return false;
+    });
+  }
+  if(searchQuery.trim()){
+    const q=searchQuery.trim().toLowerCase();
+    posts=posts.filter(p=>(p.nick||'').toLowerCase().includes(q)||(p.message||'').toLowerCase().includes(q)||((p.items||[]).join(' ')).toLowerCase().includes(q));
+  }
+  document.getElementById('postCount').textContent=`게시물 ${posts.length}개`;
+  const prof=loadProfile();
+  document.getElementById('pcAvatar').textContent=prof.avatar||'🌿';
+  document.getElementById('pcName').textContent=prof.nick||'닉네임 없음';
+  renderCommCatTabs();
+  const feed=document.getElementById('feed');
+  feed.innerHTML=posts.length===0
+    ?`<div class="feed-empty"><div class="fe-icon">🌱</div>${searchQuery||commCat!=='전체'?'검색 결과가 없어요':'아직 게시물이 없어요'}<br><small>${searchQuery||commCat!=='전체'?'다른 검색어나 카테고리를 시도해보세요':'첫 실천을 공유해보세요!'}</small></div>`
+    :posts.map(renderPost).join('');
+  const top=[...(loadPosts()||[])].sort((a,b)=>b.likes-a.likes).slice(0,4);
+  document.getElementById('topPosts').innerHTML=top.map((p,i)=>`
+    <div class="top-post">
+      <div class="tp-rank">${['🥇','🥈','🥉','4'][i]}</div>
+      <div class="tp-info">
+        <div class="tp-nick">${esc(p.avatar)} ${esc(p.nick)}</div>
+        <div class="tp-pts">${p.pts}pt · CO₂ ${p.co2.toFixed(1)}kg</div>
+      </div>
+      <div class="tp-likes">❤️ ${p.likes}</div>
+    </div>`).join('');
+}
+function renderPost(p){
+  const hasEco=(p.pct>0)||(p.items&&p.items.length>0);
+  const catLabel=p.cat&&p.cat!=='일상'?`<span class="post-cat-badge">${p.cat}</span>`:'';
+  const cmts=(p.comments||[]).map(c=>`<div class="comment-item"><div class="c-av">${c.avatar}</div><div class="c-body"><div class="c-nick">${esc(c.nick)}</div><div class="c-text">${esc(c.text)}</div></div></div>`).join('');
+  const ecoCard=hasEco?`<div class="post-eco">
+        <div class="pe-pct">지구에 <span>${p.pct}%</span> 기여!</div>
+        <div class="pe-co2">CO₂ ${p.co2.toFixed(2)}kg 절감</div>
+        ${p.items&&p.items.length?`<div class="pe-items">${p.items.join(' · ')}</div>`:''}
+      </div>`:'';
+  return `<div class="post-card" id="card-${p.id}">
+    <div class="post-inner">
+      <div class="post-header">
+        <div class="post-avatar">${p.avatar}</div>
+        <div class="post-meta"><div class="post-nick">${esc(p.nick)}</div><div class="post-date">${fmtDate(p.date)}</div></div>
+        ${catLabel}<div class="post-badge">${p.pts}pt</div>
+      </div>
+      ${ecoCard}
+      ${p.message?`<div class="post-message">${esc(p.message)}</div>`:''}
+    </div>
+    <div class="post-actions">
+      <button class="like-btn${p.likedByMe?' liked':''}" onclick="toggleLike('${p.id}')">${p.likedByMe?'❤️':'🤍'} ${p.likes}</button>
+      <div class="cmt-count">💬 ${(p.comments||[]).length}</div>
+    </div>
+    <div class="comments-area">${cmts}</div>
+    <div class="comment-input-row">
+      <input class="ci" id="ci-${p.id}" placeholder="댓글 달기..." maxlength="80" onkeydown="if(event.key==='Enter')addCmt('${p.id}')">
+      <button class="cs" onclick="addCmt('${p.id}')">전송</button>
+    </div>
+  </div>`;
+}
+function toggleLike(id){
+  const posts=loadPosts()||[];const p=posts.find(p=>p.id===id);if(!p)return;
+  p.likedByMe=!p.likedByMe;p.likes+=p.likedByMe?1:-1;savePosts(posts);renderFeed();
+}
+function addCmt(id){
+  const inp=document.getElementById('ci-'+id),text=inp.value.trim();if(!text)return;
+  const prof=loadProfile();if(!prof.nick){showToast('먼저 닉네임을 설정해주세요!');openNickModal();return;}
+  const posts=loadPosts()||[];const p=posts.find(p=>p.id===id);if(!p)return;
+  p.comments.push({nick:prof.nick,avatar:prof.avatar,text});savePosts(posts);inp.value='';renderFeed();
+}
+
+/* ══════════════════════════
+   NICKNAME
+══════════════════════════ */
+let selAv='🌿';
+function openNickModal(){
+  const prof=loadProfile();selAv=prof.avatar||'🌿';
+  document.getElementById('nickIn').value=prof.nick||'';
+  document.getElementById('avatarGrid').innerHTML=AVATARS.map(a=>`<span class="av-pick${a===selAv?' selected':''}" onclick="pickAv('${a}')">${a}</span>`).join('');
+  document.getElementById('nickModal').classList.add('open');
+}
+function pickAv(a){selAv=a;document.querySelectorAll('.av-pick').forEach(el=>el.classList.toggle('selected',el.textContent===a));}
+function saveNick(){
+  const nick=document.getElementById('nickIn').value.trim();if(!nick){showToast('닉네임을 입력해주세요');return;}
+  saveProfile({nick,avatar:selAv});closeModal('nickModal');showToast('✅ 닉네임 저장됐어요!');
+  if(currentPage==='community')renderFeed();
+}
+
+/* ══════════════════════════
+   WRITE POST
+══════════════════════════ */
+function openWriteModal(){
+  const prof=loadProfile();
+  if(!prof.nick){showToast('먼저 닉네임을 설정해주세요!');openNickModal();return;}
+  writeSelCat='일상';writeEcoOn=false;
+  document.getElementById('wmText').value='';
+  document.getElementById('wmEcoRow').classList.remove('on');
+  document.getElementById('wmCatGrid').innerHTML=COMM_CATS.filter(c=>c!=='전체').map(c=>
+    `<span class="wm-cat-chip${c===writeSelCat?' selected':''}" onclick="pickWriteCat('${c}')">${c}</span>`
+  ).join('');
+  document.getElementById('writeModal').classList.add('open');
+}
+function pickWriteCat(c){
+  writeSelCat=c;
+  document.querySelectorAll('.wm-cat-chip').forEach(el=>el.classList.toggle('selected',el.textContent===c));
+}
+function toggleWriteEco(){
+  writeEcoOn=!writeEcoOn;
+  document.getElementById('wmEcoRow').classList.toggle('on',writeEcoOn);
+}
+function submitWritePost(){
+  const prof=loadProfile();
+  const msg=document.getElementById('wmText').value.trim();
+  if(!msg){showToast('내용을 입력해주세요!');return;}
+  let pct=0,co2=0,pts=0,items=[];
+  if(writeEcoOn){const s=getStats();pct=s.pct;co2=s.co2;pts=s.pts;items=s.done.map(i=>i.name);}
+  const posts=loadPosts()||[];
+  posts.unshift({id:'p'+Date.now(),nick:prof.nick,avatar:prof.avatar,date:today(),pct,co2,pts,items,cat:writeSelCat,message:msg,likes:0,likedByMe:false,comments:[]});
+  savePosts(posts);
+  closeModal('writeModal');
+  showToast('🌍 게시됐어요!');
+  renderFeed();
+}
+
+/* ══════════════════════════
+   HELPERS
+══════════════════════════ */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function fmtDate(ds){const y=new Date();y.setDate(y.getDate()-1);const yd=y.toISOString().slice(0,10);return ds===today()?'오늘':ds===yd?'어제':ds.slice(5).replace('-','월 ')+'일';}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeBg(e,id){if(e.target.id===id)closeModal(id);}
+let toastTmr;
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTmr);toastTmr=setTimeout(()=>el.classList.remove('show'),2200);}
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+renderTabs();renderChecklist();updateResult();updateHeader();updateHistory();renderCommCatTabs();
+
+/* ══════════════════════════
+   EARTH CANVAS ANIMATION
+══════════════════════════ */
+(function(){
+  const canvas = document.getElementById('earthCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const CX = W/2, CY = H/2;
+  const R = W * 0.30; // earth radius
+
+  // Continent shapes (simplified polygons, normalized 0-1 from center)
+  const CONTINENTS = [
+    // Eurasia-ish blob
+    [{x:-0.05,y:-0.32},{x:0.22,y:-0.38},{x:0.45,y:-0.28},{x:0.48,y:-0.05},{x:0.30,y:0.08},{x:0.12,y:0.10},{x:-0.10,y:0.02}],
+    // Africa
+    [{x:-0.08,y:0.05},{x:0.10,y:0.04},{x:0.14,y:0.22},{x:0.06,y:0.40},{x:-0.05,y:0.38},{x:-0.12,y:0.22}],
+    // Americas
+    [{x:-0.42,y:-0.30},{x:-0.22,y:-0.28},{x:-0.18,y:-0.10},{x:-0.28,y:0.05},{x:-0.24,y:0.35},{x:-0.36,y:0.38},{x:-0.44,y:0.15},{x:-0.50,y:-0.10}],
+    // Australia
+    [{x:0.32,y:0.22},{x:0.50,y:0.20},{x:0.52,y:0.38},{x:0.35,y:0.40}],
+    // Antarctica
+    [{x:-0.60,y:0.48},{x:0.60,y:0.48},{x:0.60,y:0.58},{x:-0.60,y:0.58}],
+  ];
+
+  // Fire particles
+  const FIRE_COUNT = 80;
+  let particles = [];
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < FIRE_COUNT; i++) {
+      particles.push(makeParticle(i / FIRE_COUNT));
+    }
+  }
+  function makeParticle(angleFrac) {
+    const angle = angleFrac * Math.PI * 2;
+    const dist = R * (1.05 + Math.random() * 0.45);
+    return {
+      angle,            // position angle on ring
+      dist,             // radial distance
+      size: R * (0.06 + Math.random() * 0.12),
+      alpha: 0.4 + Math.random() * 0.6,
+      flickerSpeed: 0.04 + Math.random() * 0.06,
+      flickerPhase: Math.random() * Math.PI * 2,
+      riseSpeed: 0.002 + Math.random() * 0.003,
+      life: Math.random(),      // 0..1
+      birthAngle: angleFrac,
+      color: Math.random() < 0.5 ? 0 : 1, // 0=orange,1=yellow
+    };
+  }
+
+  // Animation state
+  window.earthTargetPct = 0;
+  let earthCurrentPct = 0;
+  let frame = 0;
+
+  function drawFrame() {
+    // Smooth interpolation toward target
+    earthCurrentPct += (earthTargetPct - earthCurrentPct) * 0.04;
+    const pct = earthCurrentPct;
+    const fireFrac = 1 - pct / 100; // 1=full fire, 0=no fire
+
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    // ── 1. Space background ──
+    const bgG = ctx.createRadialGradient(CX, CY, R * 0.5, CX, CY, W * 0.8);
+    bgG.addColorStop(0, '#06091a');
+    bgG.addColorStop(1, '#000208');
+    ctx.fillStyle = bgG;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    // fixed seed-like stars using sin
+    for (let s = 0; s < 40; s++) {
+      const sx = (Math.sin(s * 137.5) * 0.5 + 0.5) * W;
+      const sy = (Math.sin(s * 97.3 + 1) * 0.5 + 0.5) * H;
+      const sr = 0.5 + (Math.sin(s * 31.7) * 0.5 + 0.5) * 0.8;
+      ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // ── 2. Fire outer glow ──
+    if (fireFrac > 0.01) {
+      const fg = ctx.createRadialGradient(CX, CY, R * 0.9, CX, CY, R * 2.4);
+      fg.addColorStop(0, `rgba(255,90,0,${fireFrac * 0.55})`);
+      fg.addColorStop(0.3, `rgba(220,40,0,${fireFrac * 0.30})`);
+      fg.addColorStop(0.6, `rgba(160,10,0,${fireFrac * 0.15})`);
+      fg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = fg;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // ── 3. Blue protective glow ──
+    if (pct > 0.5) {
+      const bi = pct / 100;
+      const bg2 = ctx.createRadialGradient(CX, CY, R * 1.0, CX, CY, R * 2.2);
+      bg2.addColorStop(0, `rgba(40,140,255,${bi * 0.50})`);
+      bg2.addColorStop(0.4, `rgba(20,80,220,${bi * 0.22})`);
+      bg2.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = bg2;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // ── 4. Earth sphere ──
+    const eg = ctx.createRadialGradient(CX - R*0.25, CY - R*0.25, R*0.05, CX, CY, R);
+    eg.addColorStop(0,  '#2a6fa8');
+    eg.addColorStop(0.35,'#1a4f80');
+    eg.addColorStop(0.7, '#0d3260');
+    eg.addColorStop(1,   '#061828');
+    ctx.save();
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2);
+    ctx.clip();
+    ctx.fillStyle = eg; ctx.fillRect(0, 0, W, H);
+
+    // Continents
+    ctx.fillStyle = 'rgba(34,115,58,0.80)';
+    CONTINENTS.forEach(poly => {
+      ctx.beginPath();
+      poly.forEach((p, i) => {
+        const px = CX + p.x * R * 1.85, py = CY + p.y * R * 1.85;
+        i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+      });
+      ctx.closePath(); ctx.fill();
+    });
+
+    // Atmosphere tint on Earth
+    const atm = ctx.createRadialGradient(CX, CY, R*0.6, CX, CY, R);
+    atm.addColorStop(0, 'rgba(80,160,255,0)');
+    atm.addColorStop(1, 'rgba(80,160,255,0.18)');
+    ctx.fillStyle = atm; ctx.fillRect(0, 0, W, H);
+
+    // Shine highlight
+    const shine = ctx.createRadialGradient(CX-R*0.35, CY-R*0.35, 0, CX-R*0.1, CY-R*0.1, R*0.75);
+    shine.addColorStop(0, 'rgba(255,255,255,0.18)');
+    shine.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = shine; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // ── 5. Atmosphere ring ──
+    const ar = ctx.createRadialGradient(CX,CY,R*0.92, CX,CY,R*1.12);
+    ar.addColorStop(0, `rgba(100,180,255,${0.10 + (pct/100)*0.20})`);
+    ar.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = ar; ctx.fillRect(0,0,W,H);
+
+    // ── 6. Fire particles ──
+    if (fireFrac > 0.01) {
+      particles.forEach((p, idx) => {
+        // Only show particle if its angle is within fire coverage arc
+        // Fire covers angles from 0 → fireFrac * 2π
+        let pa = p.angle % (Math.PI * 2);
+        if (pa < 0) pa += Math.PI * 2;
+        if (pa > fireFrac * Math.PI * 2) return;
+
+        p.life += p.flickerSpeed;
+        if (p.life > 1) {
+          // Respawn
+          particles[idx] = makeParticle(p.birthAngle);
+          particles[idx].life = 0;
+          return;
+        }
+        const lifeAlpha = Math.sin(p.life * Math.PI); // 0→1→0
+        const flicker = 0.7 + 0.3 * Math.sin(frame * p.flickerSpeed * 8 + p.flickerPhase);
+        const a = p.alpha * lifeAlpha * flicker * fireFrac;
+        if (a < 0.02) return;
+
+        const rise = p.life * R * 0.35;
+        const px = CX + Math.cos(p.angle) * (p.dist + rise * 0.3);
+        const py = CY + Math.sin(p.angle) * (p.dist + rise * 0.3) - rise * 0.6;
+        const sz = p.size * (0.6 + 0.4 * (1 - p.life));
+
+        const colors = p.color === 0
+          ? [`rgba(255,210,30,${a})`,`rgba(255,100,0,${a*0.7})`,`rgba(180,20,0,0)`]
+          : [`rgba(255,240,80,${a})`,`rgba(255,160,20,${a*0.7})`,`rgba(200,50,0,0)`];
+
+        const fg2 = ctx.createRadialGradient(px, py, 0, px, py, sz);
+        fg2.addColorStop(0, colors[0]);
+        fg2.addColorStop(0.5, colors[1]);
+        fg2.addColorStop(1, colors[2]);
+        ctx.fillStyle = fg2;
+        ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI*2); ctx.fill();
+      });
+    }
+
+    // ── 7. Blue arc ring (grows with pct) ──
+    if (pct > 0.5) {
+      const blueAngle = (pct / 100) * Math.PI * 2;
+      const startA = -Math.PI / 2;
+
+      // Glow halo
+      ctx.save();
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = 'rgba(80,180,255,0.8)';
+      ctx.strokeStyle = `rgba(120,200,255,${0.3 + (pct/100)*0.4})`;
+      ctx.lineWidth = R * 0.22;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(CX, CY, R * 1.18, startA, startA + blueAngle);
+      ctx.stroke();
+      ctx.restore();
+
+      // Core arc
+      ctx.save();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = 'rgba(160,220,255,1)';
+      ctx.strokeStyle = `rgba(190,230,255,${0.7 + (pct/100)*0.3})`;
+      ctx.lineWidth = R * 0.07;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(CX, CY, R * 1.18, startA, startA + blueAngle);
+      ctx.stroke();
+      ctx.restore();
+
+      // Leading edge spark
+      const endA = startA + blueAngle;
+      const ex = CX + Math.cos(endA) * R * 1.18;
+      const ey = CY + Math.sin(endA) * R * 1.18;
+      const sg = ctx.createRadialGradient(ex, ey, 0, ex, ey, R*0.18);
+      sg.addColorStop(0, 'rgba(220,240,255,0.9)');
+      sg.addColorStop(0.4, 'rgba(120,200,255,0.5)');
+      sg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = sg;
+      ctx.beginPath(); ctx.arc(ex, ey, R*0.18, 0, Math.PI*2); ctx.fill();
+    }
+
+    // ── 8. % label on canvas ──
+    const labelPct = Math.round(earthCurrentPct);
+    if (labelPct > 0) {
+      ctx.save();
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `900 ${Math.round(R*0.40)}px 'Apple SD Gothic Neo','Noto Sans KR',sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.fillText(labelPct+'%', CX, CY);
+      ctx.restore();
+    }
+
+    requestAnimationFrame(drawFrame);
+  }
+
+  initParticles();
+  drawFrame();
+})();
+</script>
+
+<!-- ══ WRITE MODAL ══ -->
+<div class="modal-bg" id="writeModal" onclick="closeBg(event,'writeModal')">
+  <div class="write-modal-box">
+    <div class="wm-header">
+      <h3>✍️ 커뮤니티 글쓰기</h3>
+      <button class="modal-close" onclick="closeModal('writeModal')">✕</button>
+    </div>
+    <div class="wm-body">
+      <div class="wm-section-label">카테고리</div>
+      <div class="wm-cat-grid" id="wmCatGrid"></div>
+      <div class="wm-section-label">내용</div>
+      <textarea class="wm-textarea" id="wmText" rows="4" placeholder="환경 실천 경험, 팁, 질문 등을 자유롭게 공유해보세요!"></textarea>
+      <div class="wm-eco-row" id="wmEcoRow" onclick="toggleWriteEco()">
+        <div class="wm-toggle"></div>
+        <div class="wm-eco-text">
+          <strong>오늘의 실천 기록 첨부</strong>
+          <small>오늘 체크한 항목을 함께 공유해요</small>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="mbt mbt-ghost" onclick="closeModal('writeModal')">취소</button>
+        <button class="mbt mbt-primary" onclick="submitWritePost()">게시하기 🌍</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
